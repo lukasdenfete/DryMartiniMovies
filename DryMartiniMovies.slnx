@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DryMartiniMovies.API/DryMartiniMovies.API.csproj" />
+  <Project Path="DryMartiniMovies.Core/DryMartiniMovies.Core.csproj" />
+</Solution>
