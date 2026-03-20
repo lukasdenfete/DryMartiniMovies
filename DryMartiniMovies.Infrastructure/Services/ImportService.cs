@@ -15,11 +15,13 @@ namespace DryMartiniMovies.Infrastructure.Services
     {
         private readonly TmdbService _tmdbService;
         private readonly ILogger<ImportService> _logger;
+        private readonly IMovieRepository _movieRepository;
 
-        public ImportService(TmdbService tmdbService, ILogger<ImportService> logger)
+        public ImportService(TmdbService tmdbService, ILogger<ImportService> logger, IMovieRepository movieRepository)
         {
             _tmdbService = tmdbService;
             _logger = logger;
+            _movieRepository = movieRepository;
         }
 
         public async Task<ImportResultDto> ImportFromCsvAsync(string userId, Stream csvFile)
@@ -41,7 +43,7 @@ namespace DryMartiniMovies.Infrastructure.Services
                     errors.Add($"Hittades ej i TMDB: {record.Name} ({record.Year})");
                     continue;
                 }
-                //TODO: save in neo4j here
+                await _movieRepository.UpsertAsync(movie);
                 imported++;
                 _logger.LogInformation("[{Imported}/{Total}] {Title} ({Year})", imported, total, movie.Title, movie.Year);
 
