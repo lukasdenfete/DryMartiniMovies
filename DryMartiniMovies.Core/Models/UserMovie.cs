@@ -7,4 +7,5 @@ public class UserMovie
     public float Rating { get; set; }
     public DateTime WatchedDate { get; set; }
     public string? Review { get; set; }
+    public Movie? Movie { get; set; }
 }

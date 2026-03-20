@@ -40,7 +40,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     userId,
                     tmdbId,
                     rating,
-                    watchedDate = watchedDate.ToString("yyyy-mm-dd")
+                    watchedDate = watchedDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)
                 });
         }
         public Task<User?> GetByIdAsync(string id)

@@ -1,26 +1,33 @@
 ﻿using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
+
 
 namespace DryMartiniMovies.Infrastructure.Services
 {
     public class MovieService : IMovieService
     {
-        public Task<Movie?> GetMovieAsync(string id)
+        private readonly IMovieRepository _movieRepository;
+        private readonly TmdbService _tmdbService;
+
+        public MovieService(IMovieRepository movieRepository, TmdbService tmdbService)
         {
-            throw new NotImplementedException();
+            _movieRepository = movieRepository;
+            _tmdbService = tmdbService;
+        }
+        public async Task<Movie?> GetMovieAsync(string id)
+        {
+            return await _movieRepository.GetByIdAsync(id);
         }
 
-        public Task<IEnumerable<Movie>> GetUserMoviesAsync(string userId)
+        public async Task<IEnumerable<UserMovie>> GetUserMoviesAsync(string userId)
         {
-            throw new NotImplementedException();
+            return await _movieRepository.GetUserMoviesWithRatingsAsync(userId);
         }
 
-        public Task<Movie?> SearchTmdbAsync(string title, int year)
+        public async Task<Movie?> SearchTmdbAsync(string title, int year)
         {
-            throw new NotImplementedException();
+            return await _tmdbService.SearchMovieAsync(title, year);
         }
     }
 }
