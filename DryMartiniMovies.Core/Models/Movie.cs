@@ -1,6 +1,8 @@
 ﻿using System;
 using DryMartiniMovies.Core;
 
+namespace DryMartiniMovies.Core.Models;
+
 public class Movie
 {
     public string Id { get; set; } = string.Empty;

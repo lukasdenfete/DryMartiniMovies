@@ -1,5 +1,6 @@
 ﻿using DryMartiniMovies.Core;
 using DryMartiniMovies.Core.Interfaces;
+using DryMartiniMovies.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -16,7 +16,7 @@ builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IImportService, ImportService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
-builder.Services.AddHttpClient<TmdbService>();
+builder.Services.AddSingleton<TmdbService>();
 
 var app = builder.Build();
 

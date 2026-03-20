@@ -1,12 +1,15 @@
 ﻿using DryMartiniMovies.Core.Interfaces;
+using DryMartiniMovies.Core.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using DryMartiniMovies.Core.Interfaces;
+using DryMartiniMovies.Core.Models;
+using DryMartiniMovies.Infrastructure.Neo4j;
 
 namespace DryMartiniMovies.Infrastructure.Repositories
 {
     public class MovieRepository : IMovieRepository
     {
+        private readonly Neo4jContext _context;
         public Task<IEnumerable<Movie>> GetAllMoviesAsync(string userId)
         {
             throw new NotImplementedException();
@@ -21,5 +24,6 @@ namespace DryMartiniMovies.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
     }
 }

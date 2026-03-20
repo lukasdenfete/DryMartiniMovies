@@ -1,3 +1,5 @@
+using DryMartiniMovies.Core.Models;
+
 namespace DryMartiniMovies.Core.Interfaces;
 
 public interface IMovieService
