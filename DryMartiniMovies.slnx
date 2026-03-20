@@ -2,4 +2,5 @@
   <Project Path="DryMartiniMovies.API/DryMartiniMovies.API.csproj" />
   <Project Path="DryMartiniMovies.Core/DryMartiniMovies.Core.csproj" />
   <Project Path="DryMartiniMovies.Infrastructure/DryMartiniMovies.Infrastructure.csproj" />
+  <Project Path="DryMartiniMovies.Web/DryMartiniMovies.Web.csproj" />
 </Solution>
