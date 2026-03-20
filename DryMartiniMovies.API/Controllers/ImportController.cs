@@ -10,10 +10,12 @@ namespace DryMartiniMovies.API.Controllers
     public class ImportController : ControllerBase
     {
         private readonly IImportService _importService;
+        private readonly IConfiguration _config;
 
-        public ImportController(IImportService importService)
+        public ImportController(IImportService importService, IConfiguration config)
         {
             _importService = importService;
+            _config = config;
         }
 
         [HttpPost("letterboxd")]
@@ -21,8 +23,10 @@ namespace DryMartiniMovies.API.Controllers
         {
             if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
 
+            var userId = _config["App:DefaultUserId"] ?? "default";
+
             using var stream = file.OpenReadStream();
-            var result = await _importService.ImportFromCsvAsync("user1", stream);
+            var result = await _importService.ImportFromCsvAsync(userId, stream);
 
             return Ok(result);
         }

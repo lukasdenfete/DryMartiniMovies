@@ -49,7 +49,8 @@ namespace DryMartiniMovies.Infrastructure.Services
                 PosterPath = details.PosterPath,
                 TmdbRating = details.VoteAverage,
                 Directors = directors,
-                Actors = actors
+                Actors = actors,
+                Genres = details.Genres?.Select(g => new Genre { Name = g.Name }).ToList() ?? new List<Genre>()
             };
         }
     }

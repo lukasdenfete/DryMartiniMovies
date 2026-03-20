@@ -13,6 +13,6 @@ public class LetterboxdRecord
 
     public string LetterboxdUri { get; set; } = string.Empty;
 
-    public decimal Rating { get; set; }
+    public float Rating { get; set; }
 
 }

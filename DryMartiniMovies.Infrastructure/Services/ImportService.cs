@@ -16,12 +16,14 @@ namespace DryMartiniMovies.Infrastructure.Services
         private readonly TmdbService _tmdbService;
         private readonly ILogger<ImportService> _logger;
         private readonly IMovieRepository _movieRepository;
+        private readonly IUserRepository _userRepository;
 
-        public ImportService(TmdbService tmdbService, ILogger<ImportService> logger, IMovieRepository movieRepository)
+        public ImportService(TmdbService tmdbService, ILogger<ImportService> logger, IMovieRepository movieRepository, IUserRepository userRepository)
         {
             _tmdbService = tmdbService;
             _logger = logger;
             _movieRepository = movieRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<ImportResultDto> ImportFromCsvAsync(string userId, Stream csvFile)
@@ -32,6 +34,8 @@ namespace DryMartiniMovies.Infrastructure.Services
             var total = records.Count;
 
             _logger.LogInformation("Startar import av {Total} filmer...", total);
+
+            await _userRepository.UpsertAsync(new Core.Models.User { Id = userId, Username = userId });
 
             foreach (var record in records) 
             {
@@ -44,6 +48,7 @@ namespace DryMartiniMovies.Infrastructure.Services
                     continue;
                 }
                 await _movieRepository.UpsertAsync(movie);
+                await _userRepository.AddRatingAsync(userId, movie.TmdbId, record.Rating, record.Date);
                 imported++;
                 _logger.LogInformation("[{Imported}/{Total}] {Title} ({Year})", imported, total, movie.Title, movie.Year);
 

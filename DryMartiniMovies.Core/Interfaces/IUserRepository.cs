@@ -6,4 +6,5 @@ public interface IUserRepository
 {
     Task<User?> GetByIdAsync(string id);
     Task UpsertAsync(User user);
+    Task AddRatingAsync(string userId, int tmdbId, float rating, DateTime watchedDate);
 }
