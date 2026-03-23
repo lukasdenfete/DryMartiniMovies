@@ -1,9 +1,10 @@
 ﻿@page "/movies"
+@rendermode InteractiveServer
 @inject MovieApiService MovieApiService
 
-<h1>Mina filmer</h1>
+<h1>Mina filmer 🍸</h1>
 
-    @if (movies == null)
+@if (movies == null)
 {
     <p>Laddar...</p>
 }
@@ -16,14 +17,61 @@ else
                 <img src="@($"https://image.tmdb.org/t/p/w200{userMovie.Movie?.PosterPath}")" 
                      alt="@userMovie.Movie?.Title" />
                 <div class="movie-info">
-                    <h5>@userMovie.Movie?.Title</h5>
-                    <p>@userMovie.Movie?.Year</p>
-                    <p>⭐ @userMovie.Rating / 5</p>
+                    <h6>@userMovie.Movie?.Title</h6>
+                    <small>@userMovie.Movie?.Year</small>
+                    <div class="rating">⭐ @userMovie.Rating / 5</div>
                 </div>
             </div>
         }
     </div>
 }
+
+<style>
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        padding: 1rem 0;
+    }
+
+    .movie-card {
+        background: #1a1a2e;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .movie-card:hover {
+        transform: scale(1.03);
+    }
+
+    .movie-card img {
+        width: 100%;
+        display: block;
+    }
+
+    .movie-info {
+        padding: 0.5rem;
+        color: white;
+    }
+
+    .movie-info h6 {
+        margin: 0 0 0.25rem 0;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .movie-info small {
+        color: #aaa;
+    }
+
+    .rating {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+</style>
 
 @code {
     private List<UserMovie>? movies;

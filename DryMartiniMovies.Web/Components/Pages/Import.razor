@@ -1,0 +1,106 @@
+﻿@page "/import"
+@rendermode InteractiveServer
+@inject HttpClient Http
+@inject ILogger<Import> Logger
+
+<h1>Importera filmer</h1>
+
+<div class="import-container">
+    @if (!isImporting && result == null)
+    {
+        <p>Ladda upp din Letterboxd ratings.csv för att importera filmer.</p>
+        <InputFile OnChange="HandleFileSelected" accept=".csv" />
+
+        @if (selectedFile != null)
+        {
+            <p>Vald fil: <strong>@selectedFile.Name</strong></p>
+            <button class="btn btn-primary mt-2" @onclick="ImportFile">Importera</button>
+        }
+    }
+
+    @if (isImporting)
+    {
+        <div class="d-flex align-items-center gap-3 mt-3">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mb-0">Importerar filmer... (@seconds sekunder)</p>
+        </div>
+    }
+
+    @if (result != null)
+    {
+        <div class="result mt-3">
+            <h4>Import klar! ✅</h4>
+            <p>Importerade: <strong>@result.ImportedCount</strong></p>
+            <p>Misslyckades: <strong>@result.FailedCount</strong></p>
+            @if (result.Errors.Any())
+            {
+                <details>
+                    <summary>Visa fel</summary>
+                    <ul>
+                        @foreach (var error in result.Errors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </details>
+            }
+            <button class="btn btn-secondary mt-3" @onclick="Reset">Importera igen</button>
+        </div>
+    }
+</div>
+
+@code {
+    private IBrowserFile? selectedFile;
+    private ImportResultDto? result;
+    private bool isImporting = false;
+    private int seconds = 0;
+    private Timer? timer;
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        Logger.LogInformation("Fil vald: {Name}", selectedFile.Name);
+    }
+
+    private async Task ImportFile()
+    {
+        if (selectedFile == null) return;
+
+        isImporting = true;
+        result = null;
+        seconds = 0;
+
+        timer = new Timer(async _ =>
+        {
+            seconds++;
+            await InvokeAsync(StateHasChanged);
+        }, null, 1000, 1000);
+
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            using var streamContent = new StreamContent(stream);
+            content.Add(streamContent, "file", selectedFile.Name);
+
+            var response = await Http.PostAsync("api/import/letterboxd", content);
+            result = await response.Content.ReadFromJsonAsync<ImportResultDto>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Fel vid import");
+        }
+        finally
+        {
+            timer?.Dispose();
+            isImporting = false;
+        }
+    }
+
+    private void Reset()
+    {
+        selectedFile = null;
+        result = null;
+        seconds = 0;
+    }
+}

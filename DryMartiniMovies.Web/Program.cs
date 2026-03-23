@@ -8,7 +8,16 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient<MovieApiService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7248");
+    client.BaseAddress = new Uri("http://localhost:5185");
+});
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("http://localhost:5185"),
+    Timeout = TimeSpan.FromMinutes(10)
+});
+builder.Services.AddSignalR(e => {
+    e.MaximumReceiveMessageSize = 10 * 1024 * 1024;
+    e.EnableDetailedErrors = true;
 });
 
 var app = builder.Build();
