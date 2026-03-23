@@ -1,0 +1,35 @@
+﻿@page "/movies"
+@inject MovieApiService MovieApiService
+
+<h1>Mina filmer</h1>
+
+    @if (movies == null)
+{
+    <p>Laddar...</p>
+}
+else
+{
+    <div class="movie-grid">
+        @foreach (var userMovie in movies)
+        {
+            <div class="movie-card">
+                <img src="@($"https://image.tmdb.org/t/p/w200{userMovie.Movie?.PosterPath}")" 
+                     alt="@userMovie.Movie?.Title" />
+                <div class="movie-info">
+                    <h5>@userMovie.Movie?.Title</h5>
+                    <p>@userMovie.Movie?.Year</p>
+                    <p>⭐ @userMovie.Rating / 5</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<UserMovie>? movies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movies = await MovieApiService.GetUserMoviesAsync();
+    }
+}
