@@ -93,12 +93,26 @@ else
 
         filteredMovies = movies;
     }
-    private void HandleSearch((string query, string genre) args){
+    private void HandleSearch((string query, string genre, string sort) args)
+    {
         if (movies == null) return;
-        filteredMovies = movies.Where(m => {
-            var matchesQuery = string.IsNullOrEmpty(args.query) || m.Movie!.Title.Contains(args.query, StringComparison.OrdinalIgnoreCase);
-            var matchesGenre = string.IsNullOrEmpty(args.genre) || m.Movie!.Genres.Any(g => g.Name == args.genre);
-        return matchesQuery && matchesGenre;
+
+        filteredMovies = movies.Where(m =>
+        {
+            var matchesQuery = string.IsNullOrEmpty(args.query) ||
+                m.Movie!.Title.Contains(args.query, StringComparison.OrdinalIgnoreCase);
+
+            var matchesGenre = string.IsNullOrEmpty(args.genre) ||
+                m.Movie!.Genres.Any(g => g.Name == args.genre);
+
+            return matchesQuery && matchesGenre;
         }).ToList();
+
+        filteredMovies = args.sort switch
+        {
+            "asc" => filteredMovies.OrderBy(m => m.Rating).ToList(),
+            "desc" => filteredMovies.OrderByDescending(m => m.Rating).ToList(),
+            _ => filteredMovies // ingen sortering
+        };
     }
 }
