@@ -1,7 +1,6 @@
-﻿using DryMartiniMovies.Core.Interfaces;
+﻿using DryMartiniMovies.Core.DTOs;
+using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
-using System.Runtime.InteropServices;
-using DryMartiniMovies.Core.DTOs;
 using Microsoft.Extensions.Configuration;
 
 

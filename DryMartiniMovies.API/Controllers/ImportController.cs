@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DryMartiniMovies.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using DryMartiniMovies.Core.Interfaces;
 
 
 namespace DryMartiniMovies.API.Controllers

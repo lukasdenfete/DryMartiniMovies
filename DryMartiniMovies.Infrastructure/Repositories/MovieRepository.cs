@@ -1,13 +1,9 @@
 ﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
-using DryMartiniMovies.Core.Interfaces;
-using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Infrastructure.Neo4j;
 using Microsoft.Extensions.Logging;
 using Neo4j.Driver;
-using System;
-using System.Linq;
 
 namespace DryMartiniMovies.Infrastructure.Repositories
 {

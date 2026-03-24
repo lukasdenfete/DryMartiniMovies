@@ -1,10 +1,9 @@
-﻿using DryMartiniMovies.Core.DTOs;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Import;
 using DryMartiniMovies.Core.Interfaces;
-using CsvHelper;
-using CsvHelper.Configuration;
 using DryMartiniMovies.Infrastructure.Mapping;
-using DryMartiniMovies.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 

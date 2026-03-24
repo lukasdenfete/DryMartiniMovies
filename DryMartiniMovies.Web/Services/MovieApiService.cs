@@ -14,12 +14,12 @@ namespace DryMartiniMovies.Web.Services
 
         public async Task<List<UserMovie>> GetUserMoviesAsync()
         {
-            return await _http.GetFromJsonAsync<List<UserMovie>>("api/movie/user") ?? new List<UserMovie>();
+            return await _http.GetFromJsonAsync<List<UserMovie>>("api/movies/user") ?? new List<UserMovie>();
         }
 
         public async Task<UserMovie?> GetMovieAsync(int tmdbId)
         {
-            return await _http.GetFromJsonAsync<UserMovie>($"api/movie/{tmdbId}");
+            return await _http.GetFromJsonAsync<UserMovie>($"api/movies/{tmdbId}");
         }
     }
 }

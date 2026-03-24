@@ -5,12 +5,12 @@ namespace DryMartiniMovies.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MovieController : ControllerBase
+    public class MoviesController : ControllerBase
     {
         private readonly IMovieService _movieService;
         private readonly IConfiguration _config;
 
-        public MovieController(IMovieService movieService, IConfiguration config)
+        public MoviesController(IMovieService movieService, IConfiguration config)
         {
             _movieService = movieService;
             _config = config;

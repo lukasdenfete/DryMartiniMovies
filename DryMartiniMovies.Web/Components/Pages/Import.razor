@@ -1,7 +1,6 @@
 ﻿@page "/import"
 @rendermode InteractiveServer
 @inject HttpClient Http
-@inject ILogger<Import> Logger
 
 <h1>Importera filmer</h1>
 <ErrorMessage Message="@errorMessage" />
@@ -61,7 +60,6 @@
     private void HandleFileSelected(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
-        Logger.LogInformation("Fil vald: {Name}", selectedFile.Name);
     }
 
     private async Task ImportFile()
@@ -92,7 +90,6 @@
         catch (Exception ex)
         {
             errorMessage = "Något gick fel vid import. Försök igen.";
-            Logger.LogError(ex, "Fel vid import");
         }
         finally
         {

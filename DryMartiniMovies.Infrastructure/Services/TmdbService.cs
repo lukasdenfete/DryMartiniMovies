@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using TMDbLib.Client;
 using TMDbLib.Objects.Movies;
-using TMDbLib.Objects.Search;
 
 namespace DryMartiniMovies.Infrastructure.Services
 {
