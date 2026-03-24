@@ -1,14 +1,20 @@
 ﻿@page "/movies"
 @rendermode InteractiveServer
 @inject MovieApiService MovieApiService
+@inject NavigationManager Navigation
+
 
 <h1>Mina filmer 🍸</h1>
 
 <MovieSearch Genres="genres" OnSearchChanged="HandleSearch"/>
+<ErrorMessage Message="@errorMessage" />
 
-@if (movies == null)
+@if (movies == null && errorMessage == null)
 {
-    <p>Laddar...</p>
+    <div class="d-flex align-items-center gap-3">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mb-0">Laddar filmer...</p>
+    </div>
 }
 else
 {
@@ -77,23 +83,31 @@ else
 </style>
 
 @code {
-    @inject NavigationManager Navigation
     private List<UserMovie>? movies;
     private List<UserMovie> filteredMovies = new ();
     private List<string> genres = new ();
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        movies = await MovieApiService.GetUserMoviesAsync();
-        genres = movies
-            .Where(m => m.Movie?.Genres != null)
-            .SelectMany(m => m.Movie!.Genres)
-            .Select(g => g.Name)
-            .Distinct()
-            .OrderBy(g => g)
-            .ToList();
+        try
+        {
+            movies = await MovieApiService.GetUserMoviesAsync();
+            
+            genres = movies
+                .Where(m => m.Movie?.Genres != null)
+                .SelectMany(m => m.Movie!.Genres)
+                .Select(g => g.Name)
+                .Distinct()
+                .OrderBy(g => g)
+                .ToList();
 
-        filteredMovies = movies;
+            filteredMovies = movies;
+        }
+        catch (Exception)
+        {
+            errorMessage = "Kunde inte hämta filmer. Kolla så API:et är igång.";
+        }
     }
     private void HandleSearch((string query, string genre, string sort) args)
     {
@@ -117,7 +131,8 @@ else
             _ => filteredMovies // ingen sortering
         };
     }
-    private void NavigateToMovie(int tmdbId){
+    private void NavigateToMovie(int tmdbId) {
         Navigation.NavigateTo($"/movies/{tmdbId}");
     }
+
 }

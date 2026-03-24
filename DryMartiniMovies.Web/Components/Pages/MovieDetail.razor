@@ -1,9 +1,18 @@
 ﻿@page "/movies/{tmdbId:int}"
 @rendermode InteractiveServer
 @inject MovieApiService MovieApiService
+@inject NavigationManager Navigation
 
-@if (userMovie == null) {
-    <p>Laddar...</p>
+<button class="btn btn-outline-secondary mb-3" @onclick='() => Navigation.NavigateTo("/movies")'>
+    Tillbaka
+</button>
+<ErrorMessage Message="@errorMessage" />
+
+@if (userMovie == null && errorMessage == null) {
+    <div class="d-flex align-items-center gap-3">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mb-0">Laddar film...</p>
+    </div>
 }
 else {
     <div class="movie-detail">
@@ -66,7 +75,16 @@ else {
 @code {
     [Parameter] public int TmdbId {get; set; }
     private UserMovie? userMovie;
+    private string? errorMessage;
+
     protected override async Task OnInitializedAsync() {
-        userMovie = await MovieApiService.GetMovieAsync(TmdbId);
-    }
+        try
+        {
+            userMovie = await MovieApiService.GetMovieAsync(TmdbId);
+        }
+        catch (Exception)
+        {
+            errorMessage = "Kunde inte hämta filmen. Kolla så API:et är igång.";
+        }
+        }
 }

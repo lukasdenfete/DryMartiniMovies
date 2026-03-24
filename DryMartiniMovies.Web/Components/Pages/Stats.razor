@@ -3,10 +3,14 @@
 @inject HttpClient Http
 
 <h1>Min filmstatistik 🍸</h1>
+<ErrorMessage Message="@errorMessage" />
 
-@if (stats == null)
+@if (stats == null && errorMessage == null)
 {
-    <p>Laddar...</p>
+    <div class="d-flex align-items-center gap-3">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mb-0">Laddar statistik...</p>
+    </div>
 }
 else
 {
@@ -193,6 +197,7 @@ else
 
 @code {
     private StatsDto? stats;
+    private string? errorMessage;
     private int directorLimit = 10;
     private string directorSort = "count";
     private int actorLimit = 10;
@@ -200,6 +205,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
+        try
+        {
+            stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
+        }
+        catch (Exception)
+        {
+            errorMessage = "Kunde inte hämta statistik. Kolla så API:et är igång.";
+        }
     }
 }
