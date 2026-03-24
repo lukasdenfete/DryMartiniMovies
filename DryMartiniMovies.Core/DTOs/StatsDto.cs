@@ -12,6 +12,7 @@ namespace DryMartiniMovies.Core.DTOs
         public List<DirectorStatDto> TopDirectors { get; set; } = new();
         public List<RatingDistributionDto> RatingDistribution {  get; set; } = new();
         public List<YearStatDto> MoviesByDecade { get; set; } = new();
+        public List<ActorStatDto> TopActors { get; set; } = new();
     }
 
     public class GenreStatDto
@@ -35,5 +36,11 @@ namespace DryMartiniMovies.Core.DTOs
     {
         public int Decade {  get; set; }
         public int Count { get; set; }
+    }
+    public class ActorStatDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public double AverageRating { get; set; }
     }
 }

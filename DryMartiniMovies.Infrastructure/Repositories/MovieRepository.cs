@@ -203,8 +203,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             var directorResult = await session.RunAsync(@"
                 MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
                 RETURN d.name AS name, count(m) AS count, avg(r.rating) AS avgRating
-                ORDER BY count DESC
-                LIMIT 10",
+                ORDER BY count DESC",
                 new { userId });
             var directorRecords = await directorResult.ToListAsync();
 
@@ -223,6 +222,16 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 ORDER BY decade",
                 new { userId });
             var decadeRecords = await decadeResult.ToListAsync();
+
+            //Favoritskådespelare
+            var actorResult = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
+                WITH a.name AS name, count(m) AS count, avg(r.rating) AS avgRating
+                WHERE count >= 3
+                RETURN name, count, avgRating
+                ORDER BY count DESC",
+                new { userId });
+            var actorRecords = await actorResult.ToListAsync();
 
             return new StatsDto
             {
@@ -249,6 +258,12 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 {
                     Decade = r["decade"].As<int>(),
                     Count = r["count"].As<int>()
+                }).ToList(),
+                TopActors = actorRecords.Select(r => new ActorStatDto
+                {
+                    Name = r["name"].As<string>(),
+                    Count = r["count"].As<int>(),
+                    AverageRating = r["avgRating"].As<double>()
                 }).ToList()
             };
         }

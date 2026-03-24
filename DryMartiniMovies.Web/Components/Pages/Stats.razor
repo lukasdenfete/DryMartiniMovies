@@ -1,0 +1,205 @@
+﻿@page "/stats"
+@rendermode InteractiveServer
+@inject HttpClient Http
+
+<h1>Min filmstatistik 🍸</h1>
+
+@if (stats == null)
+{
+    <p>Laddar...</p>
+}
+else
+{
+    <div class="stats-container">
+
+        <div class="stat-card">
+            <h2>@stats.TotalMovies</h2>
+            <p>sedda filmer</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>@stats.AverageRating.ToString("0.00")</h2>
+            <p>genomsnittsbetyg</p>
+        </div>
+
+        <div class="stats-section">
+            <h3>Favoritgenres</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Genre</th>
+                        <th>Antal</th>
+                        <th>Snittbetyg</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var genre in stats.TopGenres)
+                    {
+                        <tr>
+                            <td>@genre.Name</td>
+                            <td>@genre.Count</td>
+                            <td>@genre.AverageRating.ToString("0.00")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats-section">
+            <div class="d-flex align-items-center gap-3 mb-2">
+            <h3 class="mb-0">Favoritregissörer</h3>
+                    <select class="form-select" style="max-width: 150px" @bind="directorLimit">
+                        <option value="10">Visa 10</option>
+                        <option value="25">Visa 25</option>
+                        <option value="50">Visa 50</option>
+                        <option value="999">Visa alla</option>
+                    </select>
+                    <select class="form-select" style="max-width: 180px" @bind="directorSort">
+                        <option value="count">Sortera på antal</option>
+                        <option value="rating">Sortera på betyg</option>
+                    </select>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Regissör</th>
+                        <th>Antal</th>
+                        <th>Snittbetyg</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var director in stats.TopDirectors
+                        .OrderByDescending(d => directorSort == "rating" ? d.AverageRating : d.Count)
+                        .Take(directorLimit))
+                    {
+                        <tr>
+                            <td>@director.Name</td>
+                            <td>@director.Count</td>
+                            <td>@director.AverageRating.ToString("0.00")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats-section">
+            <h3>Betygsdistribution</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Betyg</th>
+                        <th>Antal filmer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var rating in stats.RatingDistribution)
+                    {
+                        <tr>
+                            <td>⭐ @rating.Rating</td>
+                            <td>@rating.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats-section">
+            <h3>Filmer per decennium</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Decennium</th>
+                        <th>Antal filmer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var decade in stats.MoviesByDecade)
+                    {
+                        <tr>
+                            <td>@decade.Decade-talet</td>
+                            <td>@decade.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="stats-section">
+            <div class="d-flex align-items-center gap-3 mb-2">
+            <h3 class="mb-0">Favoritskådespelare</h3>
+                <select class="form-select" style="max-width: 150px" @bind="actorLimit">
+                    <option value="10">Visa 10</option>
+                    <option value="25">Visa 25</option>
+                    <option value="50">Visa 50</option>
+                    <option value="999">Visa alla</option>
+                </select>
+                <select class="form-select" style="max-width: 180px" @bind="actorSort">
+                        <option value="count">Sortera på antal</option>
+                        <option value="rating">Sortera på betyg</option>
+                </select>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Skådespelare</th>
+                        <th>Antal filmer</th>
+                        <th>Snittbetyg</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var actor in stats.TopActors.OrderByDescending(a => actorSort == "rating" ? a.AverageRating : a.Count).Take(actorLimit))
+                    {
+                        <tr>
+                            <td>@actor.Name</td>
+                            <td>@actor.Count</td>
+                            <td>@actor.AverageRating.ToString("0.00")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+}
+
+<style>
+    .stats-container {
+        padding: 1rem 0;
+    }
+
+    .stat-card {
+        display: inline-block;
+        background: #1a1a2e;
+        color: white;
+        border-radius: 8px;
+        padding: 1.5rem 2rem;
+        margin: 0 1rem 1rem 0;
+        text-align: center;
+    }
+
+    .stat-card h2 {
+        font-size: 2.5rem;
+        margin: 0;
+    }
+
+    .stat-card p {
+        margin: 0;
+        color: #aaa;
+    }
+
+    .stats-section {
+        margin-top: 2rem;
+    }
+</style>
+
+@code {
+    private StatsDto? stats;
+    private int directorLimit = 10;
+    private string directorSort = "count";
+    private int actorLimit = 10;
+    private string actorSort = "count";
+
+    protected override async Task OnInitializedAsync()
+    {
+        stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
+    }
+}
