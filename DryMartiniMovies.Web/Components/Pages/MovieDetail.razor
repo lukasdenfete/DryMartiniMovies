@@ -1,0 +1,72 @@
+﻿@page "/movies/{tmdbId:int}"
+@rendermode InteractiveServer
+@inject MovieApiService MovieApiService
+
+@if (userMovie == null) {
+    <p>Laddar...</p>
+}
+else {
+    <div class="movie-detail">
+        <div class="movie-header">
+            <img src="@($"https://image.tmdb.org/t/p/w300{userMovie.Movie?.PosterPath}")" alt="@userMovie.Movie?.Title"/>
+            <div class="movie-header-info">
+                <h1>@userMovie.Movie?.Title</h1>
+                <p class="year text-muted">@userMovie.Movie?.Year</p>
+                <p class="description">@userMovie.Movie?.Description</p>
+                <div class="ratings mt-3">
+                    <p>Mitt betyg: <strong>@userMovie.Rating / 5 </strong></p>
+                    <p>TMDB: <strong>@userMovie.Movie?.TmdbRating.ToString("0.0") / 10 </strong></p>
+                    <p>Såg den: <strong>@userMovie.WatchedDate.ToString("yyyy-MM-dd")</strong></p>
+                </div>
+                <div class="genres mt-3">
+                    @foreach (var genre in userMovie.Movie?.Genres ?? new ()) {
+                        <span class="badge bg-secondary me-1">
+                            @genre.Name
+                            </span>
+                    }
+                </div>
+            </div>
+    </div>
+    <div class="movie-crew mt-4">
+        <h4>Regissör</h4>
+        @foreach (var director in userMovie.Movie?.Directors ?? new ()){
+            <span class="badge bg-dark me-1">
+                @director.Name
+                </span>
+        }
+        <h4 class="mt-3">Skådespelare</h4>
+        <div class="actors">
+            @foreach (var actor in userMovie.Movie?.Actors ?? new ()){
+                <span class="badge bg-dark me-2">
+                    @actor.Name
+                    </span>
+            }
+        </div>
+    </div>
+    </div>
+}
+<style>
+    .movie-detail {
+        padding: 2rem;
+    }
+    .movie-header {
+        display: flex;
+        gap: 2rem;
+    }
+    .movie-header img {
+        border-radius: 8px;
+        width: 200px;
+        flex-shrink: 0;
+    }
+    .movie-header-info {
+        flex: 1;
+    }
+</style>
+
+@code {
+    [Parameter] public int TmdbId {get; set; }
+    private UserMovie? userMovie;
+    protected override async Task OnInitializedAsync() {
+        userMovie = await MovieApiService.GetMovieAsync(TmdbId);
+    }
+}

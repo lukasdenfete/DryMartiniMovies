@@ -39,5 +39,12 @@ namespace DryMartiniMovies.API.Controllers
             if (movie == null) return NotFound();
             return Ok(movie);
         }
+        [HttpGet("{tmdbId:int}")]
+        public async Task<IActionResult> GetMovie(int tmdbId)
+        {
+            var movie = await _movieService.GetMovieAsync(tmdbId);
+            if (movie == null) return NotFound();
+            return Ok(movie);
+        }
     }
 }

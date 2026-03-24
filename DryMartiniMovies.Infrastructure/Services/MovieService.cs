@@ -29,5 +29,10 @@ namespace DryMartiniMovies.Infrastructure.Services
         {
             return await _tmdbService.SearchMovieAsync(title, year);
         }
+        public async Task<UserMovie?> GetMovieAsync(int tmdbId)
+        {
+            var userId = "1";
+            return await _movieRepository.GetUserMovieAsync(userId, tmdbId);
+        }
     }
 }

@@ -15,7 +15,7 @@ else
     <div class="movie-grid">
         @foreach (var userMovie in filteredMovies)
         {
-            <div class="movie-card">
+            <div class="movie-card" @onclick="() => NavigateToMovie(userMovie.Movie!.TmdbId)">
                 <img src="@($"https://image.tmdb.org/t/p/w200{userMovie.Movie?.PosterPath}")" 
                      alt="@userMovie.Movie?.Title" />
                 <div class="movie-info">
@@ -76,6 +76,7 @@ else
 </style>
 
 @code {
+    @inject NavigationManager Navigation
     private List<UserMovie>? movies;
     private List<UserMovie> filteredMovies = new ();
     private List<string> genres = new ();
@@ -114,5 +115,8 @@ else
             "desc" => filteredMovies.OrderByDescending(m => m.Rating).ToList(),
             _ => filteredMovies // ingen sortering
         };
+    }
+    private void NavigateToMovie(int tmdbId){
+        Navigation.NavigateTo($"/movies/{tmdbId}");
     }
 }

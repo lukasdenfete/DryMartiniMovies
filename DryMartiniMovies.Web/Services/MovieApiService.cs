@@ -16,5 +16,10 @@ namespace DryMartiniMovies.Web.Services
         {
             return await _http.GetFromJsonAsync<List<UserMovie>>("api/movie/user") ?? new List<UserMovie>();
         }
+
+        public async Task<UserMovie?> GetMovieAsync(int tmdbId)
+        {
+            return await _http.GetFromJsonAsync<UserMovie>($"api/movie/{tmdbId}");
+        }
     }
 }

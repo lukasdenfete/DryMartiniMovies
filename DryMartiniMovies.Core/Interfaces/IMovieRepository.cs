@@ -8,4 +8,5 @@ public interface IMovieRepository
    // Task<IEnumerable<Movie>> GetAllMoviesAsync(string userId);
     Task UpsertAsync(Movie movie);
     Task<IEnumerable<UserMovie>> GetUserMoviesWithRatingsAsync(string userId);
+    Task<UserMovie?> GetUserMovieAsync(string userId, int tmdbId);
 }

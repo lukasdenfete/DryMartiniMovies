@@ -147,6 +147,39 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 Movie = MapMovie(record)
             });
         }
+        public async Task<UserMovie?> GetUserMovieAsync(string userId, int tmdbId)
+        {
+            await using var session = _context.OpenSession();
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie {tmdbId: $tmdbId})
+                OPTIONAL MATCH (m)-[:HAS_GENRE]->(g:Genre)
+                OPTIONAL MATCH (d:Director)-[:DIRECTED]->(m)
+                OPTIONAL MATCH (a:Actor)-[:ACTED_IN]->(m)
+                RETURN m,
+                       r.rating AS rating,
+                       r.watchedDate AS watchedDate,
+                       collect(DISTINCT g.name) AS genres,
+                       collect(DISTINCT d.name) AS directors,
+                       collect(DISTINCT a.name) AS actors",
+                new { userId, tmdbId });
+
+            var record = await result.SingleOrDefaultAsync();
+            if (record == null) return null;
+
+            return new UserMovie
+            {
+                UserId = userId,
+                MovieId = tmdbId.ToString(),
+                Rating = record["rating"].As<float>(),
+                WatchedDate = DateTime.TryParseExact(
+                    record["watchedDate"].As<string>(),
+                    "yyyy-MM-dd",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out var date) ? date : DateTime.MinValue,
+                Movie = MapMovie(record)
+            };
+        }
 
     }
 }
