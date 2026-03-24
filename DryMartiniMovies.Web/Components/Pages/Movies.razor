@@ -4,6 +4,8 @@
 
 <h1>Mina filmer 🍸</h1>
 
+<MovieSearch Genres="genres" OnSearchChanged="HandleSearch"/>
+
 @if (movies == null)
 {
     <p>Laddar...</p>
@@ -11,7 +13,7 @@
 else
 {
     <div class="movie-grid">
-        @foreach (var userMovie in movies)
+        @foreach (var userMovie in filteredMovies)
         {
             <div class="movie-card">
                 <img src="@($"https://image.tmdb.org/t/p/w200{userMovie.Movie?.PosterPath}")" 
@@ -75,9 +77,28 @@ else
 
 @code {
     private List<UserMovie>? movies;
+    private List<UserMovie> filteredMovies = new ();
+    private List<string> genres = new ();
 
     protected override async Task OnInitializedAsync()
     {
         movies = await MovieApiService.GetUserMoviesAsync();
+        genres = movies
+            .Where(m => m.Movie?.Genres != null)
+            .SelectMany(m => m.Movie!.Genres)
+            .Select(g => g.Name)
+            .Distinct()
+            .OrderBy(g => g)
+            .ToList();
+
+        filteredMovies = movies;
+    }
+    private void HandleSearch((string query, string genre) args){
+        if (movies == null) return;
+        filteredMovies = movies.Where(m => {
+            var matchesQuery = string.IsNullOrEmpty(args.query) || m.Movie!.Title.Contains(args.query, StringComparison.OrdinalIgnoreCase);
+            var matchesGenre = string.IsNullOrEmpty(args.genre) || m.Movie!.Genres.Any(g => g.Name == args.genre);
+        return matchesQuery && matchesGenre;
+        }).ToList();
     }
 }

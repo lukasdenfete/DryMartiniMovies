@@ -1,0 +1,24 @@
+﻿<div class="search-bar d-flex gap-2 mb-4">
+    <input class="form-control" placeholder="Sök film..." @bind="SearchQuery" @bind:event="oninput" @onkeydown="HandleKeyDown" />
+    <select class="form-select" style="max-width: 200px" @bind="SelectedGenre">
+        <option value="">Alla kategorier</option>
+
+@foreach (var genre in Genres) {
+    <option value="@genre">@genre</option>
+}
+</select>
+    <button class="btn btn-primary" @onclick="OnSearch">Sök</button>
+</div>
+
+@code {
+    [Parameter] public List<string> Genres { get; set; } = new ();
+    [Parameter] public EventCallback<(string query, string genre)> OnSearchChanged { get; set; }
+    private string SearchQuery { get; set; } = "";
+    private string SelectedGenre { get; set; } = "";
+    private async Task OnSearch(){
+        await OnSearchChanged.InvokeAsync((SearchQuery, SelectedGenre));
+    }
+    private async Task HandleKeyDown(KeyboardEventArgs e){
+        if (e.Key == "Enter") await OnSearch();
+    }
+}
