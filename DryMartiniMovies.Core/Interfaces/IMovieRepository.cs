@@ -1,3 +1,4 @@
+using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Models;
 
 namespace DryMartiniMovies.Core.Interfaces;
@@ -9,4 +10,5 @@ public interface IMovieRepository
     Task UpsertAsync(Movie movie);
     Task<IEnumerable<UserMovie>> GetUserMoviesWithRatingsAsync(string userId);
     Task<UserMovie?> GetUserMovieAsync(string userId, int tmdbId);
+    Task<StatsDto> GetUserStatsAsync(string userId);
 }

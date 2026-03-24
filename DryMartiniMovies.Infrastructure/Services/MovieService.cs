@@ -1,6 +1,7 @@
 ﻿using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
 using System.Runtime.InteropServices;
+using DryMartiniMovies.Core.DTOs;
 
 
 namespace DryMartiniMovies.Infrastructure.Services
@@ -14,10 +15,6 @@ namespace DryMartiniMovies.Infrastructure.Services
         {
             _movieRepository = movieRepository;
             _tmdbService = tmdbService;
-        }
-        public async Task<Movie?> GetMovieAsync(string id)
-        {
-            return await _movieRepository.GetByIdAsync(id);
         }
 
         public async Task<IEnumerable<UserMovie>> GetUserMoviesAsync(string userId)
@@ -33,6 +30,10 @@ namespace DryMartiniMovies.Infrastructure.Services
         {
             var userId = "1";
             return await _movieRepository.GetUserMovieAsync(userId, tmdbId);
+        }
+        public async Task<StatsDto> GetUserStatsAsync(string userId)
+        {
+            return await _movieRepository.GetUserStatsAsync(userId);
         }
     }
 }

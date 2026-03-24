@@ -16,14 +16,6 @@ namespace DryMartiniMovies.API.Controllers
             _config = config;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetMovie(string id)
-        {
-            var movie = await _movieService.GetMovieAsync(id);
-            if (movie == null) return NotFound();
-            return Ok(movie);
-        }
-
         [HttpGet("user")]
         public async Task<IActionResult> GetUserMovies()
         {

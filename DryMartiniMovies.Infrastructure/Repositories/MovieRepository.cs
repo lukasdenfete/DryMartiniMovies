@@ -1,11 +1,12 @@
-﻿using DryMartiniMovies.Core.Interfaces;
-using DryMartiniMovies.Core.Models;
-using System;
+﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
+using DryMartiniMovies.Core.Interfaces;
+using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Infrastructure.Neo4j;
 using Microsoft.Extensions.Logging;
 using Neo4j.Driver;
+using System;
 using System.Linq;
 
 namespace DryMartiniMovies.Infrastructure.Repositories
@@ -178,6 +179,77 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     System.Globalization.DateTimeStyles.None,
                     out var date) ? date : DateTime.MinValue,
                 Movie = MapMovie(record)
+            };
+        }
+        public async Task<StatsDto> GetUserStatsAsync(string userId)
+        {
+            await using var session = _context.OpenSession();
+            var totalResult = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
+                RETURN count(m) AS total, avg(r.rating) AS avgRating",
+            new { userId });
+            var totalRecord = await totalResult.SingleAsync();
+
+            // Favoritgenres
+            var genreResult = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)-[:HAS_GENRE]->(g:Genre)
+                RETURN g.name AS name, count(m) AS count, avg(r.rating) AS avgRating
+                ORDER BY count DESC
+                LIMIT 10",
+                new { userId });
+            var genreRecords = await genreResult.ToListAsync();
+
+            // Favoritregissörer
+            var directorResult = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
+                RETURN d.name AS name, count(m) AS count, avg(r.rating) AS avgRating
+                ORDER BY count DESC
+                LIMIT 10",
+                new { userId });
+            var directorRecords = await directorResult.ToListAsync();
+
+            // Betygsdistribution
+            var ratingResult = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
+                RETURN r.rating AS rating, count(m) AS count
+                ORDER BY rating",
+                new { userId });
+            var ratingRecords = await ratingResult.ToListAsync();
+
+            // Filmer per decennium
+            var decadeResult = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
+                RETURN (m.year / 10) * 10 AS decade, count(m) AS count
+                ORDER BY decade",
+                new { userId });
+            var decadeRecords = await decadeResult.ToListAsync();
+
+            return new StatsDto
+            {
+                TotalMovies = totalRecord["total"].As<int>(),
+                AverageRating = totalRecord["avgRating"].As<double>(),
+                TopGenres = genreRecords.Select(r => new GenreStatDto
+                {
+                    Name = r["name"].As<string>(),
+                    Count = r["count"].As<int>(),
+                    AverageRating = r["avgRating"].As<double>()
+                }).ToList(),
+                TopDirectors = directorRecords.Select(r => new DirectorStatDto
+                {
+                    Name = r["name"].As<string>(),
+                    Count = r["count"].As<int>(),
+                    AverageRating = r["avgRating"].As<double>()
+                }).ToList(),
+                RatingDistribution = ratingRecords.Select(r => new RatingDistributionDto
+                {
+                    Rating = r["rating"].As<float>(),
+                    Count = r["count"].As<int>()
+                }).ToList(),
+                MoviesByDecade = decadeRecords.Select(r => new YearStatDto
+                {
+                    Decade = r["decade"].As<int>(),
+                    Count = r["count"].As<int>()
+                }).ToList()
             };
         }
 
