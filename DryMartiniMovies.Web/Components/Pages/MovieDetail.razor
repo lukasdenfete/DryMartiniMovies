@@ -1,20 +1,20 @@
-﻿@page "/movies/{tmdbId:int}"
+@page "/movies/{tmdbId:int}"
 @rendermode InteractiveServer
 @inject MovieApiService MovieApiService
 @inject NavigationManager Navigation
 
-<button class="btn btn-outline-secondary mb-3" @onclick='() => Navigation.NavigateTo("/movies")'>
+<button class="btn btn-outline-secondary mb-3" @onclick='() => Navigation.NavigateTo(From ?? "/movies")'>
     Tillbaka
 </button>
 <ErrorMessage Message="@errorMessage" />
 
-@if (userMovie == null && errorMessage == null) {
+@if (userMovie == null && tmdbMovie == null && errorMessage == null) {
     <div class="d-flex align-items-center gap-3">
         <div class="spinner-border text-primary" role="status"></div>
         <p class="mb-0">Laddar film...</p>
     </div>
 }
-else {
+else if (userMovie != null) {
     <div class="movie-detail">
         <div class="movie-header">
             <img src="@($"https://image.tmdb.org/t/p/w300{userMovie.Movie?.PosterPath}")" alt="@userMovie.Movie?.Title"/>
@@ -29,29 +29,49 @@ else {
                 </div>
                 <div class="genres mt-3">
                     @foreach (var genre in userMovie.Movie?.Genres ?? new ()) {
-                        <span class="badge bg-secondary me-1">
-                            @genre.Name
-                            </span>
+                        <span class="badge bg-secondary me-1">@genre.Name</span>
                     }
                 </div>
             </div>
-    </div>
-    <div class="movie-crew mt-4">
-        <h4>Regissör</h4>
-        @foreach (var director in userMovie.Movie?.Directors ?? new ()){
-            <span class="badge bg-dark me-1">
-                @director.Name
-                </span>
-        }
-        <h4 class="mt-3">Skådespelare</h4>
-        <div class="actors">
-            @foreach (var actor in userMovie.Movie?.Actors ?? new ()){
-                <span class="badge bg-dark me-2">
-                    @actor.Name
-                    </span>
+        </div>
+        <div class="movie-crew mt-4">
+            <h4>Regissör</h4>
+            @foreach (var director in userMovie.Movie?.Directors ?? new ()) {
+                <span class="badge bg-dark me-1">@director.Name</span>
             }
+            <h4 class="mt-3">Skådespelare</h4>
+            <div class="actors">
+                @foreach (var actor in userMovie.Movie?.Actors ?? new ()) {
+                    <span class="badge bg-dark me-2">@actor.Name</span>
+                }
+            </div>
         </div>
     </div>
+}
+else if (tmdbMovie != null) {
+    <div class="movie-detail">
+        <div class="movie-header">
+            <img src="@($"https://image.tmdb.org/t/p/w300{tmdbMovie.PosterPath}")" alt="@tmdbMovie.Title"/>
+            <div class="movie-header-info">
+                <h1>@tmdbMovie.Title</h1>
+                <p class="year text-muted">@tmdbMovie.Year</p>
+                <p class="description">@tmdbMovie.Description</p>
+                <div class="ratings mt-3">
+                    <p>TMDB: <strong>@tmdbMovie.TmdbRating.ToString("0.0") / 10 </strong></p>
+                </div>
+                <div class="genres mt-3">
+                    @foreach (var genre in tmdbMovie.Genres) {
+                        <span class="badge bg-secondary me-1">@genre</span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="movie-crew mt-4">
+            <h4>Regissör</h4>
+            @foreach (var director in tmdbMovie.Directors) {
+                <span class="badge bg-dark me-1">@director</span>
+            }
+        </div>
     </div>
 }
 <style>
@@ -73,18 +93,27 @@ else {
 </style>
 
 @code {
-    [Parameter] public int TmdbId {get; set; }
+    [Parameter] public int TmdbId { get; set; }
+    [SupplyParameterFromQuery(Name = "from")] public string? From { get; set; }
     private UserMovie? userMovie;
+    private MovieDto? tmdbMovie;
     private string? errorMessage;
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnInitializedAsync()
+    {
         try
         {
             userMovie = await MovieApiService.GetMovieAsync(TmdbId);
+            if (userMovie == null)
+            {
+                tmdbMovie = await MovieApiService.GetMovieDtoAsync(TmdbId);
+                if (tmdbMovie == null)
+                    errorMessage = "Filmen hittades inte.";
+            }
         }
         catch (Exception)
         {
             errorMessage = "Kunde inte hämta filmen. Kolla så API:et är igång.";
         }
-        }
+    }
 }

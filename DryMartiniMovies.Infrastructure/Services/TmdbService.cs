@@ -44,10 +44,10 @@ namespace DryMartiniMovies.Infrastructure.Services
 
             if (match == null) return null;
 
-            return await GetMovieDetailsAsync(match.Id, title, year);
+            return await GetMovieDetailsAsync(match.Id);
         }
 
-        private async Task<Core.Models.Movie> GetMovieDetailsAsync(int tmdbId, string title, int year)
+        public async Task<Core.Models.Movie> GetMovieDetailsAsync(int tmdbId)
         {
             var details = await _client.GetMovieAsync(tmdbId, MovieMethods.Credits);
 
@@ -64,8 +64,8 @@ namespace DryMartiniMovies.Infrastructure.Services
             return new Core.Models.Movie
             {
                 TmdbId = tmdbId,
-                Title = title,
-                Year = details.ReleaseDate?.Year ?? year,
+                Title = details.Title,
+                Year = details.ReleaseDate?.Year ?? 0,
                 Description = details.Overview,
                 PosterPath = details.PosterPath,
                 TmdbRating = details.VoteAverage,

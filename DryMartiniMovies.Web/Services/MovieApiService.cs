@@ -20,7 +20,9 @@ namespace DryMartiniMovies.Web.Services
 
         public async Task<UserMovie?> GetMovieAsync(int tmdbId)
         {
-            return await _http.GetFromJsonAsync<UserMovie>($"api/movies/{tmdbId}");
+            var response = await _http.GetAsync($"api/movies/{tmdbId}");
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<UserMovie>();
         }
         public async Task<List<RecommendationDto>> GetRecommendationsByDirectorsAsync()
         {
@@ -42,6 +44,10 @@ namespace DryMartiniMovies.Web.Services
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<RecommendationDto>>()
                    ?? new List<RecommendationDto>();
+        }
+        public async Task<MovieDto?> GetMovieDtoAsync(int tmdbId)
+        {
+            return await _http.GetFromJsonAsync<MovieDto>($"api/movies/{tmdbId}/details");
         }
     }
 }
