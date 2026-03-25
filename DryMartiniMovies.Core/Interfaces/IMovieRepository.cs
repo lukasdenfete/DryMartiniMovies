@@ -6,9 +6,12 @@ namespace DryMartiniMovies.Core.Interfaces;
 public interface IMovieRepository
 {
     Task<Movie> GetByIdAsync(string id);
-   // Task<IEnumerable<Movie>> GetAllMoviesAsync(string userId);
     Task UpsertAsync(Movie movie);
     Task<IEnumerable<UserMovie>> GetUserMoviesWithRatingsAsync(string userId);
     Task<UserMovie?> GetUserMovieAsync(string userId, int tmdbId);
     Task<StatsDto> GetUserStatsAsync(string userId);
+    Task<IEnumerable<RecommendationDto>> GetRecommendationsByDirectorsAsync(string userId, int limit);
+    Task<IEnumerable<RecommendationDto>> GetRecommendationsByGenresAsync(string userId, int limit);
+    Task<IEnumerable<RecommendationDto>> GetRecommendationsByActorsAsync(string userId, int limit);
+    Task<IEnumerable<(string Name, int TmdbId, double AvgRating)>> GetFavoriteDirectorsAsync(string userId, int minMovies = 2);
 }

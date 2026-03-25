@@ -92,14 +92,15 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     MERGE (g:Genre {name: genreName})
                     MERGE (m)-[:HAS_GENRE]->(g)
                 )
-                WITH m 
-                FOREACH (directorName IN $directors |
-                    MERGE (d:Director {name: directorName})
-                    MERGE (d)-[:DIRECTED]->(m)
+                FOREACH (director IN $directors |
+                MERGE (d:Director {name: director.name})
+                SET d.tmdbId = director.tmdbId
+                MERGE (d)-[:DIRECTED]->(m)
                 )
                 WITH m
-                FOREACH (actorName IN $actors |
-                    MERGE (a:Actor {name: actorName})
+                FOREACH (actor IN $actors |
+                    MERGE (a:Actor {name: actor.name})
+                    SET a.tmdbId = actor.tmdbId
                     MERGE (a)-[:ACTED_IN]->(m)
                 )",
                 new
@@ -111,8 +112,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     posterPath = movie.PosterPath ?? "",
                     tmdbRating = movie.TmdbRating,
                     genres = movie.Genres.Select(g => g.Name).ToList(),
-                    directors = movie.Directors.Select(d => d.Name).ToList(),
-                    actors = movie.Actors.Select(a => a.Name).ToList()
+                    directors = movie.Directors.Select(d => new { name = d.Name, tmdbId = d.TmdbId ?? 0 }).ToList(),
+                    actors = movie.Actors.Select(a => new { name = a.Name, tmdbId = a.TmdbId ?? 0 }).ToList(),
                 });
         }
 
@@ -264,5 +265,178 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             };
         }
 
+        public async Task<IEnumerable<RecommendationDto>> GetRecommendationsByDirectorsAsync(string userId, int limit)
+        {
+            await using var session = _context.OpenSession();
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(seen:Movie)<-[:DIRECTED]-(d:Director)
+                WITH d, avg(r.rating) AS avgRating
+                WHERE avgRating >= 3.5
+                MATCH (d)-[:DIRECTED]->(rec:Movie)
+                WHERE NOT EXISTS {
+                    MATCH (:User {id: $userId})-[:RATED]->(rec)
+                }
+                WITH rec, d, avgRating
+                OPTIONAL MATCH (rec)<-[:DIRECTED]-(allDir:Director)
+                WITH rec, d, avgRating, collect(DISTINCT allDir.name) AS directors
+                OPTIONAL MATCH (rec)-[:HAS_GENRE]->(g:Genre)
+                WITH rec, d, avgRating, directors, collect(DISTINCT g.name) AS genres
+                RETURN rec, d.name AS directorName, avgRating, directors, genres
+                ORDER BY rec.tmdbRating DESC
+                LIMIT $limit",
+                new { userId, limit });
+
+            var records = await result.ToListAsync();
+
+            return records.Select(record =>
+            {
+                var node = record["rec"].As<INode>();
+                var directorName = record["directorName"].As<string>();
+                var avgRating = record["avgRating"].As<double>();
+                var directors = record["directors"].As<List<string>>();
+                var genres = record["genres"].As<List<string>>();
+
+                return new RecommendationDto
+                {
+                    Movie = new MovieDto
+                    {
+                        Id = node["tmdbId"].As<int>().ToString(),
+                        TmdbId = node["tmdbId"].As<int>(),
+                        Title = node["title"].As<string>(),
+                        Description = node["description"].As<string>(),
+                        Year = node["year"].As<int>(),
+                        PosterPath = node["posterPath"].As<string>(),
+                        TmdbRating = node["tmdbRating"].As<double>(),
+                        Genres = genres,
+                        Directors = directors,
+                    },
+                    Explanation = $"Du har gett {directorName} {avgRating:F2} i snitt"
+                };
+            });
+        }
+
+        public async Task<IEnumerable<RecommendationDto>> GetRecommendationsByGenresAsync(string userId, int limit)
+        {
+            await using var session = _context.OpenSession();
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(seen:Movie)-[:HAS_GENRE]->(g:Genre)
+                WITH g, avg(r.rating) AS avgRating, count(seen) AS movieCount
+                WHERE avgRating >= 3.5 AND movieCount >= 3
+                MATCH (rec:Movie)-[:HAS_GENRE]->(g)
+                WHERE NOT EXISTS {
+                    MATCH (:User {id: $userId})-[:RATED]->(rec)
+                }
+                WITH rec, g, avgRating
+                OPTIONAL MATCH (rec)<-[:DIRECTED]-(d:Director)
+                WITH rec, g, avgRating, collect(DISTINCT d.name) AS directors
+                OPTIONAL MATCH (rec)-[:HAS_GENRE]->(allG:Genre)
+                WITH rec, g, avgRating, directors, collect(DISTINCT allG.name) AS genres
+                RETURN rec, g.name AS genreName, avgRating, directors, genres
+                ORDER BY rec.tmdbRating DESC
+                LIMIT $limit",
+                new { userId, limit });
+
+            var records = await result.ToListAsync();
+
+            return records.Select(record =>
+            {
+                var node = record["rec"].As<INode>();
+                var genreName = record["genreName"].As<string>();
+                var avgRating = record["avgRating"].As<double>();
+                var directors = record["directors"].As<List<string>>();
+                var genres = record["genres"].As<List<string>>();
+
+                return new RecommendationDto
+                {
+                    Movie = new MovieDto
+                    {
+                        Id = node["tmdbId"].As<int>().ToString(),
+                        TmdbId = node["tmdbId"].As<int>(),
+                        Title = node["title"].As<string>(),
+                        Description = node["description"].As<string>(),
+                        Year = node["year"].As<int>(),
+                        PosterPath = node["posterPath"].As<string>(),
+                        TmdbRating = node["tmdbRating"].As<double>(),
+                        Genres = genres,
+                        Directors = directors,
+                    },
+                    Explanation = $"Du gillar {genreName} – snittbetyg {avgRating:F2} ⭐"
+                };
+            });
+        }
+
+        public async Task<IEnumerable<RecommendationDto>> GetRecommendationsByActorsAsync(string userId, int limit)
+        {
+            await using var session = _context.OpenSession();
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(seen:Movie)<-[:ACTED_IN]-(a:Actor)
+                WITH a, avg(r.rating) AS avgRating, count(seen) AS movieCount
+                WHERE avgRating >= 3.5 AND movieCount >= 3
+                MATCH (a)-[:ACTED_IN]->(rec:Movie)
+                WHERE NOT EXISTS {
+                    MATCH (:User {id: $userId})-[:RATED]->(rec)
+                }
+                WITH rec, a, avgRating
+                OPTIONAL MATCH (rec)<-[:DIRECTED]-(d:Director)
+                WITH rec, a, avgRating, collect(DISTINCT d.name) AS directors
+                OPTIONAL MATCH (rec)-[:HAS_GENRE]->(g:Genre)
+                WITH rec, a, avgRating, directors, collect(DISTINCT g.name) AS genres
+                RETURN rec, a.name AS actorName, avgRating, directors, genres
+                ORDER BY rec.tmdbRating DESC
+                LIMIT $limit",
+                new { userId, limit });
+
+            var records = await result.ToListAsync();
+
+            return records.Select(record =>
+            {
+                var node = record["rec"].As<INode>();
+                var actorName = record["actorName"].As<string>();
+                var avgRating = record["avgRating"].As<double>();
+                var directors = record["directors"].As<List<string>>();
+                var genres = record["genres"].As<List<string>>();
+
+                return new RecommendationDto
+                {
+                    Movie = new MovieDto
+                    {
+                        Id = node["tmdbId"].As<int>().ToString(),
+                        TmdbId = node["tmdbId"].As<int>(),
+                        Title = node["title"].As<string>(),
+                        Description = node["description"].As<string>(),
+                        Year = node["year"].As<int>(),
+                        PosterPath = node["posterPath"].As<string>(),
+                        TmdbRating = node["tmdbRating"].As<double>(),
+                        Genres = genres,
+                        Directors = directors,
+                    },
+                    Explanation = $"Du har gett filmer med {actorName} {avgRating:F2} ⭐ i snitt"
+                };
+            });
+        }
+        public async Task<IEnumerable<(string Name, int TmdbId, double AvgRating)>> GetFavoriteDirectorsAsync(string userId, int minMovies = 2)
+        {
+            await using var session = _context.OpenSession();
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
+                WHERE d.tmdbId IS NOT NULL
+                WITH d, avg(r.rating) AS avgRating, count(m) AS movieCount
+                WHERE avgRating >= 3.5 AND movieCount >= $minMovies
+                RETURN d.name AS name, d.tmdbId AS tmdbId, avgRating
+                ORDER BY avgRating DESC",
+                new { userId, minMovies });
+
+            var records = await result.ToListAsync();
+
+            return records.Select(r => (
+                r["name"].As<string>(),
+                r["tmdbId"].As<int>(),
+                r["avgRating"].As<double>()
+            ));
+        }
     }
 }

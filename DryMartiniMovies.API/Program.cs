@@ -17,6 +17,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IImportService, ImportService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddSingleton<TmdbService>();
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
 var app = builder.Build();
 

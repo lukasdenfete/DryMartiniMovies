@@ -1,6 +1,7 @@
 ﻿using DryMartiniMovies.Core.Models;
 using Microsoft.Extensions.Configuration;
 using TMDbLib.Client;
+using TMDbLib.Objects.Discover;
 using TMDbLib.Objects.Movies;
 
 namespace DryMartiniMovies.Infrastructure.Services
@@ -51,6 +52,41 @@ namespace DryMartiniMovies.Infrastructure.Services
                 Actors = actors,
                 Genres = details.Genres?.Select(g => new Genre { Name = g.Name }).ToList() ?? new List<Genre>()
             };
+        }
+
+        public async Task<List<Core.Models.Movie>> GetMoviesByDirectorAsync(int directorTmdbId)
+        {
+            var credits = await _client.GetPersonMovieCreditsAsync(directorTmdbId);
+
+            var directedMovies = credits.Crew
+                .Where(m => m.Job == "Director")
+                .Take(10) // hämta max 10 kandidater per regissör
+                .ToList();
+
+            var movies = new List<Core.Models.Movie>();
+
+            foreach (var job in directedMovies)
+            {
+                var details = await _client.GetMovieAsync(job.Id, MovieMethods.Credits);
+                if (details == null || details.VoteCount < 50) continue;
+
+                movies.Add(new Core.Models.Movie
+                {
+                    TmdbId = details.Id,
+                    Title = details.Title,
+                    Year = details.ReleaseDate?.Year ?? 0,
+                    PosterPath = details.PosterPath,
+                    TmdbRating = details.VoteAverage,
+                    Description = details.Overview,
+                    Genres = details.Genres?.Select(g => new Genre { Name = g.Name }).ToList() ?? new(),
+                    Directors = details.Credits.Crew
+                        .Where(c => c.Job == "Director")
+                        .Select(c => new Director { Name = c.Name, TmdbId = c.Id })
+                        .ToList()
+                });
+            }
+
+            return movies.OrderByDescending(m => m.TmdbRating).ToList();
         }
     }
 }
