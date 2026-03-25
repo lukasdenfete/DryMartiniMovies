@@ -1,0 +1,112 @@
+﻿@page "/recommendations"
+@rendermode InteractiveServer
+@inject MovieApiService MovieApiService
+@inject NavigationManager Navigation
+
+<h1>Rekommendationer</h1>
+<ErrorMessage Message="@errorMessage" />
+
+@if (recommendations == null && errorMessage == null)
+{
+    <div class="d-flex align-items-center gap-3">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mb-0">Hämtar rekommendationer...</p>
+    </div>
+}
+else
+{
+    <div class="movie-grid">
+        @foreach (var rec in recommendations!)
+        {
+            <div class="movie-card" @onclick="() => NavigateToMovie(rec.Movie.TmdbId)">
+                <img src="@($"https://image.tmdb.org/t/p/w200{rec.Movie.PosterPath}")"
+                     alt="@rec.Movie.Title" />
+                <div class="movie-info">
+                    <h6>@rec.Movie.Title</h6>
+                    <small>@rec.Movie.Year</small>
+                    <div class="rating">⭐ @rec.Movie.TmdbRating.ToString("0.0") / 10</div>
+                    <div class="explanation">@rec.Explanation</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        padding: 1rem 0;
+    }
+
+    .movie-card {
+        background: #1a1a2e;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+
+        .movie-card:hover {
+            transform: scale(1.03);
+        }
+
+        .movie-card img {
+            width: 100%;
+            display: block;
+        }
+
+    .movie-info {
+        padding: 0.5rem;
+        color: white;
+    }
+
+        .movie-info h6 {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-info small {
+            color: #aaa;
+        }
+
+    .rating {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    .explanation {
+        font-size: 0.75rem;
+        color: #ccc;
+        margin-top: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+@code {
+    private List<RecommendationDto>? recommendations;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            recommendations = await MovieApiService.GetRecommendationsByDirectorsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Kunde inte hämta rekommendationer: {ex.Message}";
+        }
+    }
+
+    private void NavigateToMovie(int tmdbId)
+    {
+        Navigation.NavigateTo($"/movies/{tmdbId}");
+    }
+}

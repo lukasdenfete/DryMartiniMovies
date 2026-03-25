@@ -1,4 +1,5 @@
-﻿using DryMartiniMovies.Core.Models;
+﻿using DryMartiniMovies.Core.DTOs;
+using DryMartiniMovies.Core.Models;
 using System.Net.Http.Json;
 
 namespace DryMartiniMovies.Web.Services
@@ -20,6 +21,13 @@ namespace DryMartiniMovies.Web.Services
         public async Task<UserMovie?> GetMovieAsync(int tmdbId)
         {
             return await _http.GetFromJsonAsync<UserMovie>($"api/movies/{tmdbId}");
+        }
+        public async Task<List<RecommendationDto>> GetRecommendationsByDirectorsAsync()
+        {
+            var response = await _http.GetAsync("api/Recommendation/directors?userId=1");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<RecommendationDto>>()
+                   ?? new List<RecommendationDto>();
         }
     }
 }
