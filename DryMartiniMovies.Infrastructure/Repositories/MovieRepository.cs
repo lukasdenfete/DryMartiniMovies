@@ -264,7 +264,6 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 }).ToList()
             };
         }
-
         public async Task<IEnumerable<RecommendationDto>> GetRecommendationsByDirectorsAsync(string userId, int limit)
         {
             await using var session = _context.OpenSession();
@@ -427,7 +426,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 WITH d, avg(r.rating) AS avgRating, count(m) AS movieCount
                 WHERE avgRating >= 3.5 AND movieCount >= $minMovies
                 RETURN d.name AS name, d.tmdbId AS tmdbId, avgRating
-                ORDER BY avgRating DESC",
+                ORDER BY avgRating DESC, movieCount DESC
+                LIMIT 20",
                 new { userId, minMovies });
 
             var records = await result.ToListAsync();
@@ -435,6 +435,48 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             return records.Select(r => (
                 r["name"].As<string>(),
                 r["tmdbId"].As<int>(),
+                r["avgRating"].As<double>()
+            ));
+        }
+        public async Task<IEnumerable<(string Name, int TmdbId, double AvgRating)>> GetFavoriteActorsAsync(string userId, int minMovies = 5)
+        {
+            await using var session = _context.OpenSession();
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
+                WHERE a.tmdbId IS NOT NULL
+                WITH a, avg(r.rating) AS avgRating, count(m) AS movieCount
+                WHERE avgRating >= 3.5 AND movieCount >= $minMovies
+                RETURN a.name AS name, a.tmdbId AS tmdbId, avgRating
+                ORDER BY avgRating DESC, movieCount DESC
+                LIMIT 20",
+                new { userId, minMovies });
+
+            var records = await result.ToListAsync();
+
+            return records.Select(r => (
+                r["name"].As<string>(),
+                r["tmdbId"].As<int>(),
+                r["avgRating"].As<double>()
+            ));
+        }
+        public async Task<IEnumerable<(string Name, double AvgRating)>> GetFavoriteGenresAsync(string userId, int minMovies = 5)
+        {
+            await using var session = _context.OpenSession();
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)-[:HAS_GENRE]->(g:Genre)
+                WITH g, avg(r.rating) AS avgRating, count(m) AS movieCount
+                WHERE avgRating > 3.5 AND movieCount >= $minMovies
+                RETURN g.name AS name, avgRating
+                ORDER BY avgRating DESC
+                LIMIT 5",
+                new { userId, minMovies });
+
+            var records = await result.ToListAsync();
+
+            return records.Select(r => (
+                r["name"].As<string>(),
                 r["avgRating"].As<double>()
             ));
         }

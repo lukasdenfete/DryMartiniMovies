@@ -14,4 +14,6 @@ public interface IMovieRepository
     Task<IEnumerable<RecommendationDto>> GetRecommendationsByGenresAsync(string userId, int limit);
     Task<IEnumerable<RecommendationDto>> GetRecommendationsByActorsAsync(string userId, int limit);
     Task<IEnumerable<(string Name, int TmdbId, double AvgRating)>> GetFavoriteDirectorsAsync(string userId, int minMovies = 2);
+    Task<IEnumerable<(string Name, int TmdbId, double AvgRating)>> GetFavoriteActorsAsync(string userId, int minMovies = 3);
+    Task<IEnumerable<(string Name, double AvgRating)>> GetFavoriteGenresAsync(string userId, int minMovies = 5);
 }
