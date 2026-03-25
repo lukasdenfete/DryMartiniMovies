@@ -24,21 +24,21 @@ namespace DryMartiniMovies.Web.Services
         }
         public async Task<List<RecommendationDto>> GetRecommendationsByDirectorsAsync()
         {
-            var response = await _http.GetAsync("api/Recommendation/directors?userId=1");
+            var response = await _http.GetAsync("api/Recommendation/directors?userId=1&limit=60");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<RecommendationDto>>()
                    ?? new List<RecommendationDto>();
         }
         public async Task<List<RecommendationDto>> GetRecommendationsByActorsAsync()
         {
-            var response = await _http.GetAsync("api/Recommendation/actors?userId=1");
+            var response = await _http.GetAsync("api/Recommendation/actors?userId=1&limit=60");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<RecommendationDto>>()
                    ?? new List<RecommendationDto>();
         }
         public async Task<List<RecommendationDto>> GetRecommendationsByGenresAsync()
         {
-            var response = await _http.GetAsync("api/Recommendation/genres?userId=1");
+            var response = await _http.GetAsync("api/Recommendation/genres?userId=1&limit=60");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<RecommendationDto>>()
                    ?? new List<RecommendationDto>();

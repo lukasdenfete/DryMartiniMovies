@@ -57,13 +57,12 @@ namespace DryMartiniMovies.Infrastructure.Services
                 }
             }
 
-            var rng = new Random();
             return recommendations
                 .GroupBy(r => r.Movie.TmdbId)
                 .Select(g => g.First())
                 .OrderByDescending(r => r.Movie.TmdbRating)
-                .Take(limit * 3)
-                .OrderBy(_ => rng.Next())
+                .Take(limit * 5)
+                .OrderBy(_ => Random.Shared.Next())
                 .Take(limit);
         }
 
@@ -83,8 +82,8 @@ namespace DryMartiniMovies.Infrastructure.Services
             {
                 var genre = genreList[i];
                 var unseen = results[i]
-                    .Where(m => !seenTmdbIds.Contains(m.TmdbId) && m.TmdbRating >= 7.0)
-                    .Take(3);
+                    .Where(m => !seenTmdbIds.Contains(m.TmdbId) && m.TmdbRating >= 7.3)
+                    .Take(10);
 
                 foreach (var movie in unseen)
                 {
@@ -107,13 +106,12 @@ namespace DryMartiniMovies.Infrastructure.Services
                 }
             }
 
-            var rng = new Random();
             return recommendations
                 .GroupBy(r => r.Movie.TmdbId)
                 .Select(g => g.First())
                 .OrderByDescending(r => r.Movie.TmdbRating)
-                .Take(limit * 3)
-                .OrderBy(_ => rng.Next())
+                .Take(limit * 5)
+                .OrderBy(_ => Random.Shared.Next())
                 .Take(limit);
         }
 
@@ -156,13 +154,12 @@ namespace DryMartiniMovies.Infrastructure.Services
                 }
             }
 
-            var rng = new Random();
             return recommendations
                 .GroupBy(r => r.Movie.TmdbId)
                 .Select(g => g.First())
                 .OrderByDescending(r => r.Movie.TmdbRating)
-                .Take(limit * 3)
-                .OrderBy(_ => rng.Next())
+                .Take(limit * 5)
+                .OrderBy(_ => Random.Shared.Next())
                 .Take(limit);
         }
 

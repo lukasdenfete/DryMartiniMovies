@@ -81,7 +81,7 @@ namespace DryMartiniMovies.Infrastructure.Services
 
             var directedMovies = credits.Crew
                 .Where(m => m.Job == "Director")
-                .Take(5)
+                .Take(10)
                 .ToList();
 
             var movies = new List<Core.Models.Movie>();
@@ -109,13 +109,14 @@ namespace DryMartiniMovies.Infrastructure.Services
 
             return movies.OrderByDescending(m => m.TmdbRating).ToList();
         }
+
         public async Task<List<Core.Models.Movie>> GetMoviesByActorAsync(int actorTmdbId)
         {
             var credits = await _client.GetPersonMovieCreditsAsync(actorTmdbId);
 
             var movies = new List<Core.Models.Movie>();
 
-            foreach (var role in credits.Cast.Take(5))
+            foreach (var role in credits.Cast.Take(10))
             {
                 var details = await _client.GetMovieAsync(role.Id, MovieMethods.Credits);
                 if (details == null || details.VoteCount < 50) continue;
@@ -143,16 +144,21 @@ namespace DryMartiniMovies.Infrastructure.Services
             if (!GenreIds.TryGetValue(genreName, out var genreId))
                 return new List<Core.Models.Movie>();
 
-            var results = await Task.Run(() => _client.DiscoverMoviesAsync()
-                .IncludeWithAllOfGenre(new List<int> { genreId })
-                .OrderBy(DiscoverMovieSortBy.PopularityDesc)
-                .Query());
+            var randomPages = Enumerable.Range(1, 10)
+                .OrderBy(_ => Random.Shared.Next())
+                .Take(3);
 
-            if (results?.Results == null)
-                return new List<Core.Models.Movie>();
+            var pages = await Task.WhenAll(randomPages.Select(page =>
+                Task.Run(() => _client.DiscoverMoviesAsync()
+                    .IncludeWithAllOfGenre(new List<int> { genreId })
+                    .OrderBy(DiscoverMovieSortBy.PopularityDesc)
+                    .Query(page))));
 
-            return results.Results
+            return pages
+                .Where(p => p?.Results != null)
+                .SelectMany(p => p.Results)
                 .Where(m => m.VoteCount >= 100 && m.VoteAverage > 0)
+                .DistinctBy(m => m.Id)
                 .OrderByDescending(m => m.VoteAverage)
                 .Select(m => new Core.Models.Movie
                 {

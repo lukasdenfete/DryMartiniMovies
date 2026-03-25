@@ -13,8 +13,8 @@
         <option value="actors">Skådespelare</option>
         <option value="genres">Genres</option>
     </select>
-    <button class="btn btn-secondary btn-sm" @onclick="RefreshRecommendations" disabled="@isLoading">
-        Hämta nya rekommendationer
+    <button class="btn btn-secondary btn-sm" @onclick="NextPage" disabled="@isLoading">
+        @(hasMore ? "Visa fler" : "Hämta nya rekommendationer")
     </button>
 </div>
 
@@ -102,21 +102,30 @@ else
 </style>
 
 @code {
+    private const int PageSize = 10;
+
     private string activeTab = "directors";
     private bool isLoading = false;
     private string? errorMessage;
 
-    private List<RecommendationDto> directorsRecs = new();
-    private List<RecommendationDto> actorsRecs = new();
-    private List<RecommendationDto> genresRecs = new();
+    private List<RecommendationDto> directorsPool = new();
+    private List<RecommendationDto> actorsPool = new();
+    private List<RecommendationDto> genresPool = new();
 
-    private List<RecommendationDto> currentRecommendations => activeTab switch
+    private Dictionary<string, int> pageIndex = new() { ["directors"] = 0, ["actors"] = 0, ["genres"] = 0 };
+
+    private List<RecommendationDto> currentPool => activeTab switch
     {
-        "directors" => directorsRecs,
-        "actors" => actorsRecs,
-        "genres" => genresRecs,
+        "directors" => directorsPool,
+        "actors" => actorsPool,
+        "genres" => genresPool,
         _ => new()
     };
+
+    private List<RecommendationDto> currentRecommendations =>
+        currentPool.Skip(pageIndex[activeTab] * PageSize).Take(PageSize).ToList();
+
+    private bool hasMore => (pageIndex[activeTab] + 1) * PageSize < currentPool.Count;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -138,9 +147,9 @@ else
     {
         var alreadyLoaded = tab switch
         {
-            "directors" => directorsRecs.Any(),
-            "actors" => actorsRecs.Any(),
-            "genres" => genresRecs.Any(),
+            "directors" => directorsPool.Any(),
+            "actors" => actorsPool.Any(),
+            "genres" => genresPool.Any(),
             _ => false
         };
 
@@ -155,15 +164,16 @@ else
             switch (tab)
             {
                 case "directors":
-                    directorsRecs = await MovieApiService.GetRecommendationsByDirectorsAsync();
+                    directorsPool = await MovieApiService.GetRecommendationsByDirectorsAsync();
                     break;
                 case "actors":
-                    actorsRecs = await MovieApiService.GetRecommendationsByActorsAsync();
+                    actorsPool = await MovieApiService.GetRecommendationsByActorsAsync();
                     break;
                 case "genres":
-                    genresRecs = await MovieApiService.GetRecommendationsByGenresAsync();
+                    genresPool = await MovieApiService.GetRecommendationsByGenresAsync();
                     break;
             }
+            pageIndex[tab] = 0;
         }
         catch (Exception)
         {
@@ -179,14 +189,23 @@ else
     {
         Navigation.NavigateTo($"/movies/{tmdbId}");
     }
-    private async Task RefreshRecommendations()
+
+    private async Task NextPage()
     {
-        switch (activeTab)
+        if (hasMore)
         {
-            case "directors": directorsRecs = new(); break;
-            case "actors": actorsRecs = new(); break;
-            case "genres": genresRecs = new(); break;
+            pageIndex[activeTab]++;
         }
-        await LoadTab(activeTab);
+        else
+        {
+            // Poolen är slut — hämta ny från API
+            switch (activeTab)
+            {
+                case "directors": directorsPool = new(); break;
+                case "actors": actorsPool = new(); break;
+                case "genres": genresPool = new(); break;
+            }
+            await LoadTab(activeTab);
+        }
     }
 }
