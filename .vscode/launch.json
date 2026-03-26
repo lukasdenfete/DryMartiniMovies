@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "API + Web",
+            "configurations": ["API", "Web"]
+        }
+    ],
+    "configurations": [
+        {
+            "name": "API",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/DryMartiniMovies.API/bin/Debug/net9.0/DryMartiniMovies.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/DryMartiniMovies.API",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Web",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/DryMartiniMovies.Web/bin/Debug/net9.0/DryMartiniMovies.Web.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/DryMartiniMovies.Web",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
+    ]
+}

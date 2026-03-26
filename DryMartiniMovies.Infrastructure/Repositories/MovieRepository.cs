@@ -161,7 +161,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                        collect(DISTINCT a.name) AS actors",
                 new { userId, tmdbId });
 
-            var record = await result.SingleOrDefaultAsync();
+            var records = await result.ToListAsync();
+            var record = records.FirstOrDefault();
             if (record == null) return null;
 
             return new UserMovie
