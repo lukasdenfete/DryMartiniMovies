@@ -1,7 +1,6 @@
 ﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Infrastructure.Services;
-using DryMartiniMovies.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DryMartiniMovies.API.Controllers
@@ -60,6 +59,7 @@ namespace DryMartiniMovies.API.Controllers
                 TmdbRating = movie.TmdbRating,
                 Genres = movie.Genres.Select(g => g.Name).ToList(),
                 Directors = movie.Directors.Select(d => d.Name).ToList(),
+                Actors = movie.Actors.Select(a => a.Name).ToList(),
             });
         }
     }

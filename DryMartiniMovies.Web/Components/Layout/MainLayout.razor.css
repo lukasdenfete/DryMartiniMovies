@@ -6,6 +6,8 @@
 
 main {
     flex: 1;
+    min-width: 0;
+    overflow-x: hidden;
 }
 
 .sidebar {
@@ -36,15 +38,15 @@ main {
         text-overflow: ellipsis;
     }
 
-@media (max-width: 640.98px) {
-    .top-row {
-        justify-content: space-between;
+    @media (max-width: 640.98px) {
+        .top-row {
+            justify-content: space-between;
+        }
+    
+        .top-row ::deep a, .top-row ::deep .btn-link {
+            margin-left: 0;
+        }
     }
-
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        margin-left: 0;
-    }
-}
 
 @media (min-width: 641px) {
     .page {
@@ -56,6 +58,7 @@ main {
         height: 100vh;
         position: sticky;
         top: 0;
+        flex-shrink: 0;
     }
 
     .top-row {

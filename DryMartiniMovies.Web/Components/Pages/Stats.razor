@@ -28,6 +28,7 @@ else if (stats != null)
 
         <div class="stats-section">
             <h3>Favoritgenres</h3>
+            <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
@@ -47,10 +48,11 @@ else if (stats != null)
                     }
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="stats-section">
-            <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="d-flex align-items-center gap-3 mb-2" style="flex-wrap: wrap;">
             <h3 class="mb-0">Favoritregissörer</h3>
                     <select class="form-select" style="max-width: 150px" @bind="directorLimit">
                         <option value="10">Visa 10</option>
@@ -63,6 +65,7 @@ else if (stats != null)
                         <option value="rating">Sortera på betyg</option>
                     </select>
             </div>
+            <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
@@ -84,10 +87,12 @@ else if (stats != null)
                     }
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="stats-section">
             <h3>Betygsdistribution</h3>
+            <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
@@ -105,10 +110,12 @@ else if (stats != null)
                     }
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="stats-section">
             <h3>Filmer per decennium</h3>
+            <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
@@ -126,9 +133,10 @@ else if (stats != null)
                     }
                 </tbody>
             </table>
+            </div>
         </div>
         <div class="stats-section">
-            <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="d-flex align-items-center gap-3 mb-2" style="flex-wrap: wrap;">
             <h3 class="mb-0">Favoritskådespelare</h3>
                 <select class="form-select" style="max-width: 150px" @bind="actorLimit">
                     <option value="10">Visa 10</option>
@@ -141,6 +149,7 @@ else if (stats != null)
                         <option value="rating">Sortera på betyg</option>
                 </select>
             </div>
+            <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
@@ -160,8 +169,8 @@ else if (stats != null)
                     }
                 </tbody>
             </table>
+            </div>
         </div>
-
     </div>
 }
 
@@ -171,13 +180,14 @@ else if (stats != null)
     }
 
     .stat-card {
-        display: inline-block;
-        background: #1a1a2e;
-        color: white;
-        border-radius: 8px;
-        padding: 1.5rem 2rem;
-        margin: 0 1rem 1rem 0;
-        text-align: center;
+    display: inline-block;
+    background: #1a1a2e;
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin: 0 1rem 1rem 0;
+    text-align: center;
+    min-width: 120px;
     }
 
     .stat-card h2 {

@@ -72,23 +72,39 @@ else if (tmdbMovie != null) {
                 <span class="badge bg-dark me-1">@director</span>
             }
         </div>
+        <div class="movie-crew mt-4">
+            <h4>Skådespelare</h4>
+            @foreach (var actor in tmdbMovie.Actors) { 
+                <span class="badge bg-dark me-1">@actor</span>
+            }
+        </div>
     </div>
 }
 <style>
     .movie-detail {
-        padding: 2rem;
+        padding: 1rem;
     }
+
     .movie-header {
         display: flex;
-        gap: 2rem;
+        gap: 1.5rem;
     }
+
     .movie-header img {
         border-radius: 8px;
         width: 200px;
         flex-shrink: 0;
     }
+
     .movie-header-info {
         flex: 1;
+        min-width: 0;
+    }
+
+    .actors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
     }
 </style>
 

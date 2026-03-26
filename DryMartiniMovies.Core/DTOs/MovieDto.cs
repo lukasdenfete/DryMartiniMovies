@@ -11,6 +11,7 @@ public class MovieDto
     public double TmdbRating { get; set; }
     public List<string> Genres { get; set; } = new();
     public List<string> Directors { get; set; } = new();
+    public List<string> Actors { get; set; } = new();
     public float? UserRating { get; set; }
     public DateTime? WatchedDate { get; set; }
 }
