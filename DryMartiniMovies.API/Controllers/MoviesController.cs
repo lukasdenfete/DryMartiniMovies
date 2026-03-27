@@ -68,5 +68,11 @@ namespace DryMartiniMovies.API.Controllers
             var pace = await _movieService.GetUserPaceAsync(userId);
             return Ok(pace);
         }
+        [HttpGet("recent")]
+        public async Task<IActionResult> GetRecentMovies(){
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var recentMovies = await _movieService.GetRecentMoviesAsync(userId);
+            return Ok(recentMovies);
+        }
     }
 }

@@ -117,9 +117,12 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 UserId = userId,
                 MovieId = record["m"].As<INode>()["tmdbId"].As<int>().ToString(),
                 Rating = record["rating"].As<float>(),
-                WatchedDate = DateTime.TryParse(record["watchedDate"].As<string>(), out var date)
-                    ? date
-                    : DateTime.MinValue,
+                WatchedDate = DateTime.TryParseExact(
+                    record["watchedDate"].As<string>(),
+                    "yyyy-MM-dd",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out var date) ? date : DateTime.MinValue,
                 Movie = MapMovie(record)
             });
         }
@@ -325,6 +328,31 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 WatchedMonth = r["month"].As<string>()
             
             });
+        }
+        public async Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId){
+            await using var session = _context.OpenSession();
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
+                WITH m.title AS title, r.rating AS rating, r.watchedDate AS watchedDate, m.posterPath AS posterPath, m.tmdbId AS tmdbId
+                RETURN title, rating, watchedDate, posterPath, tmdbId
+                ORDER BY watchedDate DESC
+                LIMIT 10",
+                new { userId });
+            
+            var records = await result.ToListAsync();
+            return records.Select(r => new MovieDto {
+                Title = r["title"].As<string>(),
+                TmdbId = r["tmdbId"].As<int>(),
+                UserRating = r["rating"].As<float>(),
+                PosterPath = r["posterPath"].As<string>(),
+                WatchedDate = DateTime.TryParseExact(
+                    r["watchedDate"].As<string>(),
+                    "yyyy-MM-dd",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out var date) ? date : null
+            });     
         }
     }
 }

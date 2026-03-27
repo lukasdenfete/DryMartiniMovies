@@ -40,5 +40,8 @@ namespace DryMartiniMovies.Infrastructure.Services
         public async Task<IEnumerable<PaceDto>> GetUserPaceAsync(string userId){
             return await _movieRepository.GetUserPaceAsync(userId);
         }
+        public async Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId){
+            return await _movieRepository.GetRecentMoviesAsync(userId);
+        }
     }
 }

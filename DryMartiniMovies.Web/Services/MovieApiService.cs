@@ -52,5 +52,8 @@ namespace DryMartiniMovies.Web.Services
         public async Task<List<PaceDto>> GetUserPaceAsync(){
             return await _http.GetFromJsonAsync<List<PaceDto>>("api/movies/pace") ?? new List<PaceDto>();
         }
+        public async Task<List<MovieDto>> GetRecentMoviesAsync(){
+            return await _http.GetFromJsonAsync<List<MovieDto>>("api/movies/recent") ?? new List<MovieDto>();
+        }
     }
 }

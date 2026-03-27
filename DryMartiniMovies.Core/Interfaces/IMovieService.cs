@@ -10,5 +10,6 @@ public interface IMovieService
     Task<UserMovie?> GetMovieAsync(int tmdbId);
     Task<StatsDto> GetUserStatsAsync(string userId);
     Task<IEnumerable<PaceDto>> GetUserPaceAsync(string userId);
+    Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId);
 
 }
