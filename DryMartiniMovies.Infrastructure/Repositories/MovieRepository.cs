@@ -337,7 +337,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 WITH m.title AS title, r.rating AS rating, r.watchedDate AS watchedDate, m.posterPath AS posterPath, m.tmdbId AS tmdbId
                 RETURN title, rating, watchedDate, posterPath, tmdbId
                 ORDER BY watchedDate DESC
-                LIMIT 10",
+                LIMIT 5",
                 new { userId });
             
             var records = await result.ToListAsync();

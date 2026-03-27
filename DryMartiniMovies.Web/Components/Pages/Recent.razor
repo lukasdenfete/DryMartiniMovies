@@ -3,7 +3,7 @@
 @inject MovieApiService MovieApiService
 @inject NavigationManager Navigation
 
-<h1>Nyigen sedda filmer</h1>
+<h3 class="section-title">Nyligen sett</h3>
 <ErrorMessage Message="@errorMessage"/>
 
 @if (recentMovies == null && errorMessage == null){
@@ -28,6 +28,14 @@ else if (recentMovies != null) {
 
 }
 <style>
+    .section-title {
+        color: #ccc;
+        font-size: 1.4rem;
+        font-weight: 600;
+        letter-spacing: normal;
+        text-transform: none;
+        margin-bottom: 0.5rem;
+    }
     .movie-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -95,6 +103,6 @@ else if (recentMovies != null) {
 
     }
         private void NavigateToMovie(int tmdbId) {
-        Navigation.NavigateTo($"/movies/{tmdbId}?from=/recent");
+        Navigation.NavigateTo($"/movies/{tmdbId}?from=/");
     }
 }

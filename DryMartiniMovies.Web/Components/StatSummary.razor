@@ -1,0 +1,115 @@
+@rendermode InteractiveServer
+@inject HttpClient Http
+
+
+<ErrorMessage Message="@errorMessage" />
+
+@if (stats == null && errorMessage == null)
+{
+    <div class="d-flex align-items-center gap-3">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mb-0">Laddar statistik...</p>
+    </div>
+}
+else if (stats != null)
+{
+    <div class="stats-container">
+        <h3 class="mb-4">Min sammanfattning</h3>
+        <div class="stat-card">
+            <h2>@stats.TotalMovies</h2>
+            <p>sedda filmer</p>
+        </div>
+        <div class="stat-card">
+            <h2>@stats.AverageRating.ToString("0.00")</h2>
+            <p>genomsnittsbetyg</p>
+        </div>
+        <a class="stat-card action-card green" href="/import">
+            <p>Importera filmer</p>
+        </a>
+        <a class="stat-card action-card blue" href="/recommendations">
+            <p>Hitta nya filmer</p>
+        </a>
+         <a class="stat-card action-card purple" href="/stats">
+            <p>Min statistik</p>
+        </a>
+    </div>
+}
+<style>
+.stats-container h3 {
+    color: #ccc;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.stat-card {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a2e;
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin: 0 1rem 1rem 0;
+    text-align: center;
+    min-width: 120px;
+    min-height: 100px;
+    text-decoration: none;
+}
+
+.stat-card h2 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.stat-card p {
+    margin: 0;
+    color: #aaa;
+}
+
+.action-card.green {
+    background: #27ae60;
+}
+
+.action-card.green:hover {
+    background: #2ecc71;
+}
+
+.action-card.blue {
+    background: #2980b9;
+}
+
+.action-card.blue:hover {
+    background: #3498db;
+}
+.action-card.purple {
+    background: #8e44ad;
+}
+
+.action-card.purple:hover {
+    background: #9b59b6;
+}
+
+.action-card p {
+    color: white !important;
+    font-weight: 600;
+    font-size: 1rem;
+}
+</style>
+@code {
+    private StatsDto? stats;
+    private string? errorMessage;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
+        }
+        catch (Exception)
+        {
+            errorMessage = "Kunde inte hämta statistik. Kolla så API:et är igång.";
+        }
+    }
+}

@@ -1,9 +1,10 @@
 using DryMartiniMovies.Web.Components;
 using DryMartiniMovies.Web.Services;
+using ApexCharts;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddApexCharts();
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient<MovieApiService>(client =>
