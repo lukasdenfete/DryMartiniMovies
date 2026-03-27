@@ -307,5 +307,24 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 r["avgRating"].As<double>()
             ));
         }
+        public async Task<IEnumerable<PaceDto>> GetUserPaceAsync(string userId){
+            await using var session = _context.OpenSession();
+            var sinceDate = DateTime.Now.AddMonths(-12).ToString("yyyy-MM-dd");
+
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
+                WHERE r.watchedDate >= $sinceDate
+                WITH substring(r.watchedDate, 0, 7) AS month, count(m) AS count 
+                RETURN month, count
+                ORDER BY month",
+                new { userId, sinceDate });
+            
+            var records = await result.ToListAsync();
+            return records.Select(r => new PaceDto {
+                Count = r["count"].As<int>(),
+                WatchedMonth = r["month"].As<string>()
+            
+            });
+        }
     }
 }

@@ -1,0 +1,40 @@
+@page "/pace"
+@rendermode InteractiveServer
+@inject MovieApiService MovieApiService
+
+<h1>Visningstakt senaste året</h1>
+<ErrorMessage Message="@errorMessage" />
+
+@if (pace == null && errorMessage == null)
+{
+    <div class="d-flex align-items-center gap-3">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mb-0">Laddar historik...</p>
+    </div>
+}
+else {
+<div>
+    @foreach (var p in pace){
+        <p>Månad: @p.WatchedMonth, @p.Count filmer</p>
+    }
+</div>
+}
+
+
+
+@code {
+    private List<PaceDto>? pace;
+    private string? errorMessage;
+
+        protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            pace = await MovieApiService.GetUserPaceAsync();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Kunde inte hämta historik. Kolla så API:et är igång.";
+        }
+    }
+}

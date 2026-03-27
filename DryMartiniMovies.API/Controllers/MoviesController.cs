@@ -62,5 +62,11 @@ namespace DryMartiniMovies.API.Controllers
                 Actors = movie.Actors.Select(a => a.Name).ToList(),
             });
         }
+        [HttpGet("pace")]
+        public async Task<IActionResult> GetUserPace(){
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var pace = await _movieService.GetUserPaceAsync(userId);
+            return Ok(pace);
+        }
     }
 }
