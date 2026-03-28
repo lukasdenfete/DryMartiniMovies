@@ -12,42 +12,23 @@
 <div class="mt-4">
     <Recent />
 </div>
-<div class="mt-4">
+<div class="mt-4 pace-card">
+    <h3 class="pace-card-title">Senaste året</h3>
     <Pace />
 </div>
 
 <style>
-    .import-card {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: #27ae60;
-        color: white;
+    .pace-card {
+        background: #1a1a2e;
         border-radius: 8px;
-        padding: 1.5rem 2rem;
-        margin: 0 1rem 1rem 0;
-        text-align: center;
-        min-width: 120px;
-        text-decoration: none;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .pace-card-title {
+        color: #ccc;
+        font-size: 1.4rem;
         font-weight: 600;
-        transition: background 0.2s;
-    }
-
-    .import-card:hover {
-        background: #2ecc71;
-        color: white;
-    }
-
-    .recommend-card {
-        background: #2980b9;
-    }
-
-    .recommend-card:hover {
-        background: #3498db;
+        margin-bottom: 0.5rem;
     }
 </style>
-
-
-@code {
-
-}

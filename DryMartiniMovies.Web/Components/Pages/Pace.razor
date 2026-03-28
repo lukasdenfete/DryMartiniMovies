@@ -2,7 +2,6 @@
 @rendermode InteractiveServer
 @inject MovieApiService MovieApiService
 
-<h3 class="section-title">Senaste året</h3>
 <ErrorMessage Message="@errorMessage" />
 
 @if (pace == null && errorMessage == null)
@@ -26,16 +25,6 @@ else if (pace != null)
                          YValue="@(p => p.Count)" />
     </ApexChart>
 }
-<style>
-        .section-title {
-        color: #ccc;
-        font-size: 1.4rem;
-        font-weight: 600;
-        letter-spacing: normal;
-        text-transform: none;
-        margin-bottom: 0.5rem;
-    }
-</style>
 @code {
     private List<PaceDto>? pace;
     private string? errorMessage;
