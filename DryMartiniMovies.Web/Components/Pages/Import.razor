@@ -1,6 +1,6 @@
 ﻿@page "/import"
 @rendermode InteractiveServer
-@inject HttpClient Http
+@inject MovieApiService MovieApiService
 
 <h1>Importera filmer</h1>
 <ErrorMessage Message="@errorMessage" />
@@ -84,8 +84,7 @@
             using var streamContent = new StreamContent(stream);
             content.Add(streamContent, "file", selectedFile.Name);
 
-            var response = await Http.PostAsync("api/import/letterboxd", content);
-            result = await response.Content.ReadFromJsonAsync<ImportResultDto>();
+            result = await MovieApiService.ImportLetterboxdAsync(content);
         }
         catch (Exception ex)
         {

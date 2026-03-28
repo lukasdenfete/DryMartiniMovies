@@ -1,5 +1,6 @@
 ﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Models;
+using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace DryMartiniMovies.Web.Services
@@ -54,6 +55,18 @@ namespace DryMartiniMovies.Web.Services
         }
         public async Task<List<MovieDto>> GetRecentMoviesAsync(){
             return await _http.GetFromJsonAsync<List<MovieDto>>("api/movies/recent") ?? new List<MovieDto>();
+        }
+
+        public async Task<StatsDto?> GetStatsAsync()
+        {
+            return await _http.GetFromJsonAsync<StatsDto>("api/stats");
+        }
+
+        public async Task<ImportResultDto?> ImportLetterboxdAsync(MultipartFormDataContent content)
+        {
+            var response = await _http.PostAsync("api/import/letterboxd", content);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<ImportResultDto>();
         }
     }
 }
