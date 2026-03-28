@@ -1,6 +1,6 @@
 ﻿@page "/stats"
 @rendermode InteractiveServer
-@inject HttpClient Http
+@inject MovieApiService MovieApiService
 
 <h1>Min filmstatistik 🍸</h1>
 <ErrorMessage Message="@errorMessage" />
@@ -217,7 +217,7 @@ else if (stats != null)
     {
         try
         {
-            stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
+            stats = await MovieApiService.GetStatsAsync();
         }
         catch (Exception)
         {

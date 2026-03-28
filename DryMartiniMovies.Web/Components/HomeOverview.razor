@@ -1,5 +1,5 @@
 @rendermode InteractiveServer
-@inject HttpClient Http
+@inject MovieApiService MovieApiService
 
 
 <ErrorMessage Message="@errorMessage" />
@@ -105,7 +105,7 @@ else if (stats != null)
     {
         try
         {
-            stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
+            stats = await MovieApiService.GetStatsAsync();
         }
         catch (Exception)
         {

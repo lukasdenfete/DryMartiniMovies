@@ -7,14 +7,13 @@ builder.Services.AddApexCharts();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+var apiBaseAddress = builder.Configuration["ApiBaseAddress"]
+    ?? throw new InvalidOperationException("ApiBaseAddress is not configured.");
+
 builder.Services.AddHttpClient<MovieApiService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5185");
-});
-builder.Services.AddScoped(sp => new HttpClient
-{
-    BaseAddress = new Uri("http://localhost:5185"),
-    Timeout = TimeSpan.FromMinutes(10)
+    client.BaseAddress = new Uri(apiBaseAddress);
+    client.Timeout = TimeSpan.FromMinutes(10);
 });
 builder.Services.AddSignalR(e => {
     e.MaximumReceiveMessageSize = 10 * 1024 * 1024;
