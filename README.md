@@ -55,7 +55,7 @@ cd DryMartiniMovies.Web
 dotnet run
 ```
 
-The Blazor app expects the API to be running on `https://localhost:5185` by default. Adjust the BaseAddress in Program.cs in the Web project if needed.
+The Blazor app expects the API to be running on `https://localhost:5185` by default. Adjust the BaseAddress in `appsettings.json` in the Web project if needed.
 
 Then use the import page to upload your `ratings.csv` file (exported from Letterboxd). A sample file is available in `samples/ratings.csv` for testing.
 
