@@ -162,7 +162,5 @@ namespace DryMartiniMovies.Infrastructure.Services
                 .OrderBy(_ => Random.Shared.Next())
                 .Take(limit);
         }
-
-        public Task<string> ChatAsync(string userId, string message) => throw new NotImplementedException();
     }
 }
