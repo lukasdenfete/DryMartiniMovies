@@ -56,16 +56,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(); //dotnet 9
     app.MapScalarApiReference();
 }
-using var scope = app.Services.CreateScope();
-var chatService = scope.ServiceProvider.GetRequiredService<IChatService>();
-var chatHistory = new List<ConversationMessage>();
-chatHistory.Add(new ConversationMessage {
-    Role = "user",
-    Content = "Hämta de senaste filmerna jag sett."
-});
-var response = await chatService.ChatAsync(chatHistory);
-Console.WriteLine(response);
-
 
 app.UseHttpsRedirection();
 app.MapControllers();
