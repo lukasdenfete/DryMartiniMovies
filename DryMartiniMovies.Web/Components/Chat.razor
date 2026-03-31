@@ -7,7 +7,7 @@
   {
     <div class="chat-window">
       <div class="chat-messages">
-        @foreach (var message in chatHistory)
+        @foreach (var message in chatHistory.AsEnumerable().Reverse()) //omvänd ordning på meddelanden i listan och column-reverse på .chat-messages för att slippa köra javascript till att visa senaste meddelandet längst ner. 
         {
           if (message.Role == "user") {
             <div class="message user-message">
@@ -28,7 +28,7 @@
       </div>
     </div>
   }
- <button class="chat-bubble" @onclick="ToggleChat">💬</button>
+ <button class="chat-bubble" @onclick="ToggleChat"><i class="bi bi-robot"></i></button>
 </div>
 
 <style>
@@ -36,6 +36,7 @@
         background: none;
         border: none;
         font-size: 50px;
+        color: orangered;
     }
     
     .chat-widget {
@@ -62,7 +63,7 @@
         height: calc(100% - 60px);
         color: white;
         display: flex;
-        flex-direction: column;
+        flex-direction: column-reverse;
     }
     .chat-input {
         display: flex;
