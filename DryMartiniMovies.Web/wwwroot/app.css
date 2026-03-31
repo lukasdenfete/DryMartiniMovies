@@ -2,6 +2,38 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     overflow-x: hidden;
     background-color: #0d0d1a;
+    color: white;
+}
+
+/* Dark mode overrides for Bootstrap components */
+.table {
+    --bs-table-color: #ccc;
+    --bs-table-bg: transparent;
+    --bs-table-border-color: #2a2a3e;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+}
+
+.form-select {
+    background-color: #1a1a2e;
+    color: white;
+    border-color: #3a3a5e;
+}
+
+.form-select:focus {
+    background-color: #1a1a2e;
+    color: white;
+    border-color: #006bb7;
+    box-shadow: none;
+}
+
+.text-muted {
+    color: #aaa !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ccc;
+    font-weight: 600;
 }
 
 a, .btn-link {
