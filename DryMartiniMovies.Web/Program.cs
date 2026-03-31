@@ -24,6 +24,7 @@ builder.Services.AddHttpClient<ChatApiService>(client =>
     client.BaseAddress = new Uri(apiBaseAddress);
     client.Timeout = TimeSpan.FromMinutes(10);
 });
+builder.Services.AddScoped<ChatStateService>();
 
 var app = builder.Build();
 

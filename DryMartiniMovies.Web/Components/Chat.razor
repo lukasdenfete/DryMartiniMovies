@@ -1,13 +1,14 @@
 @using System.Diagnostics.Eventing.Reader
 @inject ChatApiService ChatApiService
+@inject ChatStateService ChatStateService
 @rendermode InteractiveServer
 
 <div class="chat-widget">
-  @if (isOpen)
+  @if (ChatStateService.isOpen)
   {
     <div class="chat-window">
       <div class="chat-messages">
-        @foreach (var message in chatHistory.AsEnumerable().Reverse()) //omvänd ordning på meddelanden i listan och column-reverse på .chat-messages för att slippa köra javascript till att visa senaste meddelandet längst ner. 
+        @foreach (var message in ChatStateService.chatHistory.AsEnumerable().Reverse()) //omvänd ordning på meddelanden i listan och column-reverse på .chat-messages för att slippa köra javascript till att visa senaste meddelandet längst ner. 
         {
           if (message.Role == "user") {
             <div class="message user-message">
@@ -120,10 +121,7 @@
 
 
 @code {
-    private List<ChatMessageDto> chatHistory = new List<ChatMessageDto>();
     private string input = string.Empty;
-    private bool isOpen;
-
     private async Task SendMessage(string userMessage)
         {
             var chatMessage = new ChatMessageDto {
@@ -131,21 +129,21 @@
                 Content = userMessage,
                 Timestamp = DateTime.Now
             };
-            chatHistory.Add(chatMessage);
+            ChatStateService.chatHistory.Add(chatMessage);
             input = "";
-            var response = await ChatApiService.GetResponse(chatHistory);
+            var response = await ChatApiService.GetResponse(ChatStateService.chatHistory);
             var chatResponse = new ChatMessageDto {
                 Role = "assistant",
                 Content = response,
                 Timestamp = DateTime.Now
             };
-            chatHistory.Add(chatResponse);
+            ChatStateService.chatHistory.Add(chatResponse);
 
         }
      private void ToggleChat()
         {
-            isOpen = !isOpen;
-            Console.WriteLine($"isOpen: {isOpen}");
+            ChatStateService.isOpen = !ChatStateService.isOpen;
+            Console.WriteLine($"isOpen: {ChatStateService.isOpen}");
         }
     private async Task HandleKeyDown(KeyboardEventArgs e)
         {
