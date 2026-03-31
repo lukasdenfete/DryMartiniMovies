@@ -42,21 +42,6 @@ ChatTool getRecentMoviesTool = ChatTool.CreateFunctionTool(
         ""required"": [ ""userId"" ]
     }")
 );      
-ChatTool getUserMoviesTool = ChatTool.CreateFunctionTool(
-    functionName: GetUserMovies,
-    functionDescription: "Get all watched movies from a specific user.",
-    functionParameters: BinaryData.FromString(@"
-    {
-        ""type"": ""object"",
-        ""properties"": {
-            ""userId"": {
-                ""type"": ""string"",
-                ""description"": ""The unique ID of a specific user.""
-            }
-        },
-        ""required"": [ ""userId"" ]
-    }")
-);
 ChatTool getRecommendationsByDirectorsTool = ChatTool.CreateFunctionTool(
     functionName: GetRecommendationsByDirectors,
     functionDescription: "Get recommendations for new movies to watch based on directors the user have rated highly.",
@@ -102,6 +87,6 @@ ChatTool getRecommendationsByGenreTool = ChatTool.CreateFunctionTool(
         ""required"": [ ""userId"" ]
     }")
 );
-    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getUserMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool };
+    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool };
 }
 }

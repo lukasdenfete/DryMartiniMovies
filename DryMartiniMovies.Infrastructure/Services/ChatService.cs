@@ -38,7 +38,7 @@ namespace DryMartiniMovies.Infrastructure.Services
                 "user" => (ChatMessage)new UserChatMessage(m.Content),
                 "assistant" => new AssistantChatMessage(m.Content),
                 _ => new SystemChatMessage(m.Content)
-            }).ToList();
+            }).TakeLast(5).ToList();
             messages.Insert(0, new SystemChatMessage(systemPrompt));
 
             var response = await _chatClient.CompleteChatAsync(messages, options);
