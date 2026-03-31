@@ -19,6 +19,11 @@ builder.Services.AddSignalR(e => {
     e.MaximumReceiveMessageSize = 10 * 1024 * 1024;
     e.EnableDetailedErrors = true;
 });
+builder.Services.AddHttpClient<ChatApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseAddress);
+    client.Timeout = TimeSpan.FromMinutes(10);
+});
 
 var app = builder.Build();
 

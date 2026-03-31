@@ -1,0 +1,68 @@
+@using System.Diagnostics.Eventing.Reader
+@inject ChatApiService ChatApiService
+@rendermode InteractiveServer
+
+<div class="chat-widget">
+  @if (isOpen)
+  {
+    <div class="chat-window">
+      <div class="chat-messages">
+        @foreach (var message in chatHistory)
+        {
+          if (message.Role == "user") {
+            <p class="user-message">
+                Jag: @message.Content
+            </p>
+            }
+            else 
+            {
+                <p class="assistant-message">
+                    AI: @message.Content
+                </p>
+            }
+          
+        }
+      </div>
+      <div class="chat-input">
+        <input type="text" @bind="input" placeholder="Meddelande..." />
+        <button type="button"  @onclick="() => SendMessage(input)">Skicka</button>
+      </div>
+    </div>
+  }
+  <p>DEBUG: isOpen = @isOpen</p>
+ <button class="chat-bubble" @onclick="ToggleChat">💬</button>
+</div>
+
+
+
+
+@code {
+    private List<ChatMessageDto> chatHistory = new List<ChatMessageDto>();
+    private string input = string.Empty;
+    private bool isOpen;
+
+    private async Task SendMessage(string userMessage)
+        {
+            var chatMessage = new ChatMessageDto {
+                Role = "user",
+                Content = userMessage,
+                Timestamp = DateTime.Now
+            };
+            chatHistory.Add(chatMessage);
+            input = "";
+            var response = await ChatApiService.GetResponse(chatHistory);
+            var chatResponse = new ChatMessageDto {
+                Role = "assistant",
+                Content = response,
+                Timestamp = DateTime.Now
+            };
+            chatHistory.Add(chatResponse);
+
+        }
+     private void ToggleChat()
+        {
+            isOpen = !isOpen;
+            Console.WriteLine($"isOpen: {isOpen}");
+        }
+
+}
