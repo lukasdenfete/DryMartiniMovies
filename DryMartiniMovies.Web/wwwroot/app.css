@@ -141,23 +141,6 @@ h1:focus {
     padding-top: 0.25rem;
 }
 
-.chat-widget {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-.chat-window {
-    width: 300px;
-    height: 400px;
-    background: white;
-    border: 1px solid #ccc;
-}
-.chat-messages {
-    overflow-y: auto;
-    height: calc(100% - 60px);
-}
-
 @media (max-width: 640px) {
     .movie-header {
         flex-direction: column;
