@@ -6,5 +6,10 @@ namespace DryMartiniMovies.Web.Services
     {
         public List<ChatMessageDto> chatHistory { get; set; } = new List<ChatMessageDto>();
         public bool isOpen { get; set; }
+
+
+        public void ClearHistory(){
+            chatHistory.Clear();
+        }
     }
 }
