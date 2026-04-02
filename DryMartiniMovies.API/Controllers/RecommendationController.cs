@@ -28,9 +28,9 @@ namespace DryMartiniMovies.API.Controllers
             return Ok(result);
         }
         [HttpGet("genres")]
-        public async Task<IActionResult> ByGenres([FromQuery] string userId, [FromQuery] int limit = 10)
+        public async Task<IActionResult> ByGenres([FromQuery] string userId, [FromQuery] string? genreName, [FromQuery] int limit = 10)
         {
-            var result = await _recommendationService.GetByFavoriteGenresAsync(userId, limit);
+            var result = await _recommendationService.GetByGenresAsync(userId, genreName, limit);
             return Ok(result);
         }
     }

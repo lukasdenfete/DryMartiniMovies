@@ -84,7 +84,9 @@ namespace DryMartiniMovies.Infrastructure.Services
                             break;
 
                         case AiTools.GetRecommendationsByGenre:
-                            var genreRecs = await _recommendationService.GetByFavoriteGenresAsync(_userId);
+                            var args = JsonDocument.Parse(toolCall.FunctionArguments);
+                            var genreName = args.RootElement.TryGetProperty("genreName", out var prop) ? prop.GetString() : null;
+                            var genreRecs = await _recommendationService.GetByGenresAsync(_userId, genreName);
                             toolResult = JsonSerializer.Serialize(genreRecs);
                             messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                             break;
@@ -94,7 +96,8 @@ namespace DryMartiniMovies.Infrastructure.Services
             }
 
             //ChatCompletion har en property Content som är en lista. Det första elementet har en Text-property.
-            return response.Value.Content[0].Text;
+            //trimmar bort dubbla radbrytningar för att det ska bli snyggare i chattrutan
+            return response.Value.Content[0].Text.Replace("\n\n", "\n");
         }
     }
 }
