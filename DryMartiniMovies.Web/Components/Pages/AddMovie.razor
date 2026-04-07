@@ -1,0 +1,80 @@
+@page "/add"
+@inject MovieApiService MovieApiService
+@rendermode InteractiveServer
+
+<div>
+    <form>
+        <input type="text" @bind="title" placeholder="Titel" />
+        <input type="text" @bind="year" placeholder="År" />
+        <button type="button" @onclick="HandleSearchMovie">Sök</button>
+    </form>
+</div>
+@if (movie != null) 
+{
+    <div class="movie-card">
+        <img src="@($"https://image.tmdb.org/t/p/w300{@movie.PosterPath}")" alt="@movie.Title"/>
+        <div class="movie-info">
+            <h6>@movie.Title</h6>
+            <p>@movie.Year</p>
+            <p>@movie.Description</p>
+            @foreach (var director in movie.Directors){
+                <p>@director</p>
+            }
+            @foreach (var actor in movie.Actors){
+                <p>@actor</p>
+            }
+        </div>
+    </div>
+    <div>
+        <p>Menar du denna film?</p>
+        <button type="button" @onclick="() => isRight = true">Ja</button>
+        <button type="button"@onclick="HandleNo">Nej</button>
+    </div>
+    if (isRight)
+    {
+        <div>
+            <form>
+                <input type="number" @bind="userRating" placeholder="Betyg" />
+                <input type="date" @bind="watchedDate" placeholder="DateTime.Now" />
+                <button type="button" @onclick="HandleSaveMovie">Lägg till</button>
+            </form>
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <p>@successMessage</p>
+            }
+        </div>
+    }
+}
+@code {
+    private string title;
+    private int year;
+    private float userRating;
+    private DateTime watchedDate;
+    private MovieDto? movie;
+    private bool isRight;
+    private string successMessage = "";
+
+    private async Task HandleSearchMovie()
+    {
+        movie = await MovieApiService.SearchTmdb(title, year);
+    }
+    private void HandleNo()
+    {
+        movie = null;
+        isRight = false;
+    }
+    private async Task HandleSaveMovie()
+    {
+        var result = await MovieApiService.AddMovie(new AddMovieDto {
+            Title = title,
+            Year = year,
+            UserRating = userRating,
+            WatchedDate = watchedDate
+        });
+        if(result)
+        {
+            successMessage = "Filmen har sparats!";
+        }
+    }
+
+}

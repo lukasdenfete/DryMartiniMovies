@@ -77,5 +77,19 @@ namespace DryMartiniMovies.Web.Services
         {
             return await _http.GetFromJsonAsync<List<string>>("api/Recommendation/getgenres") ?? new List<string>();
         }
+
+        public async Task<MovieDto?> SearchTmdb(string title, int year)
+        {
+            var response = await _http.GetAsync($"api/movies/search?title={title}&year={year}");
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<MovieDto>();
+        }
+
+        public async Task<bool> AddMovie(AddMovieDto addMovieDto)
+        {
+            var response = await _http.PostAsJsonAsync("/api/movies/add", addMovieDto);
+            if (!response.IsSuccessStatusCode) return false;
+            return true;
+        }
     }
 }

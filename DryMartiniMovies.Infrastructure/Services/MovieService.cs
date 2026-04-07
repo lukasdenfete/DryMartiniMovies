@@ -11,12 +11,14 @@ namespace DryMartiniMovies.Infrastructure.Services
         private readonly IMovieRepository _movieRepository;
         private readonly ITmdbService _tmdbService;
         private readonly IConfiguration _config;
+        private readonly IUserRepository _userRepository;
 
-        public MovieService(IMovieRepository movieRepository, ITmdbService tmdbService, IConfiguration config)
+        public MovieService(IMovieRepository movieRepository, ITmdbService tmdbService, IConfiguration config, IUserRepository userRepository)
         {
             _movieRepository = movieRepository;
             _tmdbService = tmdbService;
             _config = config;
+            _userRepository = userRepository;
         }
 
         public async Task<IEnumerable<UserMovie>> GetUserMoviesAsync(string userId)
@@ -43,5 +45,21 @@ namespace DryMartiniMovies.Infrastructure.Services
         public async Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId){
             return await _movieRepository.GetRecentMoviesAsync(userId);
         }
+        public async Task<bool> AddMovieAsync(string title, int year, string userId, float rating, DateTime watchedDate)
+        {   
+            var movie = await _tmdbService.SearchMovieAsync(title, year);
+            if (movie != null) 
+            {
+                var tmdbId = movie.TmdbId;
+                await _movieRepository.UpsertAsync(movie);
+                await _userRepository.AddRatingAsync(userId, tmdbId, rating, watchedDate);
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
     }
 }
