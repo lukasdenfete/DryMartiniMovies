@@ -9,10 +9,10 @@ namespace DryMartiniMovies.Infrastructure.Services
     public class RecommendationService : IRecommendationService
     {
         private readonly IMovieRepository _movieRepository;
-        private readonly TmdbService _tmdbService;
+        private readonly ITmdbService _tmdbService;
         private readonly ILogger<RecommendationService> _logger;
 
-        public RecommendationService(IMovieRepository movieRepository, TmdbService tmdbService, ILogger<RecommendationService> logger)
+        public RecommendationService(IMovieRepository movieRepository, ITmdbService tmdbService, ILogger<RecommendationService> logger)
         {
             _movieRepository = movieRepository;
             _tmdbService = tmdbService;

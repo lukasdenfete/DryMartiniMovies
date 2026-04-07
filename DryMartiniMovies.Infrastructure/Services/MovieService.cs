@@ -9,10 +9,10 @@ namespace DryMartiniMovies.Infrastructure.Services
     public class MovieService : IMovieService
     {
         private readonly IMovieRepository _movieRepository;
-        private readonly TmdbService _tmdbService;
+        private readonly ITmdbService _tmdbService;
         private readonly IConfiguration _config;
 
-        public MovieService(IMovieRepository movieRepository, TmdbService tmdbService, IConfiguration config)
+        public MovieService(IMovieRepository movieRepository, ITmdbService tmdbService, IConfiguration config)
         {
             _movieRepository = movieRepository;
             _tmdbService = tmdbService;

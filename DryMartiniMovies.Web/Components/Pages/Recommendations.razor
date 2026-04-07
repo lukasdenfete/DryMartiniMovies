@@ -13,6 +13,16 @@
         <option value="actors">Skådespelare</option>
         <option value="genres">Genres</option>
     </select>
+    @if (activeTab == "genres")
+    {
+        <select class="form-select w-auto" @onchange="HandleGenreChange">
+                <option value="">Mina favoritgenres</option>
+            @foreach (var genre in genres)
+            {
+                <option value="@genre">@genre</option>
+            }
+        </select>
+    }
     <button class="btn btn-secondary btn-sm" @onclick="NextPage" disabled="@isLoading">
         @(hasMore ? "Visa fler" : "Hämta nya rekommendationer")
     </button>
@@ -61,6 +71,8 @@ else
     private string activeTab = "directors";
     private bool isLoading = false;
     private string? errorMessage;
+    private string? genre;
+    private List<string> genres = new();
 
     private List<RecommendationDto> directorsPool = new();
     private List<RecommendationDto> actorsPool = new();
@@ -86,6 +98,7 @@ else
         if (firstRender)
         {
             await LoadTab("directors");
+            genres = await MovieApiService.GetGenres();
             StateHasChanged();
         }
     }
@@ -124,7 +137,7 @@ else
                     actorsPool = await MovieApiService.GetRecommendationsByActorsAsync();
                     break;
                 case "genres":
-                    genresPool = await MovieApiService.GetRecommendationsByGenresAsync();
+                    genresPool = await MovieApiService.GetRecommendationsByGenresAsync(genre);
                     break;
             }
             pageIndex[tab] = 0;
@@ -161,5 +174,16 @@ else
             }
             await LoadTab(activeTab);
         }
+    }
+
+    private async Task HandleGenreChange(ChangeEventArgs e)
+    {
+        genre = e.Value?.ToString();
+        if (string.IsNullOrEmpty(genre))
+        {
+            genre = null;
+        }
+        genresPool = new();
+        await LoadTab("genres");
     }
 }

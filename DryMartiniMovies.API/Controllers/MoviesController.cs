@@ -11,9 +11,9 @@ namespace DryMartiniMovies.API.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly IConfiguration _config;
-        private readonly TmdbService _tmdbService;
+        private readonly ITmdbService _tmdbService;
 
-        public MoviesController(IMovieService movieService, IConfiguration config, TmdbService tmdbService)
+        public MoviesController(IMovieService movieService, IConfiguration config, ITmdbService tmdbService)
         {
             _movieService = movieService;
             _config = config;

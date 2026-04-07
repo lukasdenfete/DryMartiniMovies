@@ -39,9 +39,13 @@ namespace DryMartiniMovies.Web.Services
             return await response.Content.ReadFromJsonAsync<List<RecommendationDto>>()
                    ?? new List<RecommendationDto>();
         }
-        public async Task<List<RecommendationDto>> GetRecommendationsByGenresAsync()
+        public async Task<List<RecommendationDto>> GetRecommendationsByGenresAsync(string? genreName)
         {
-            var response = await _http.GetAsync("api/Recommendation/genres?userId=1&limit=60");
+            var url = "api/Recommendation/genres?userId=1&limit=60";
+            if (genreName != null){
+                url += $"&genreName={genreName}";
+            }
+            var response = await _http.GetAsync(url);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<RecommendationDto>>()
                    ?? new List<RecommendationDto>();
@@ -67,6 +71,11 @@ namespace DryMartiniMovies.Web.Services
             var response = await _http.PostAsync("api/import/letterboxd", content);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<ImportResultDto>();
+        }
+
+        public async Task<List<string>> GetGenres()
+        {
+            return await _http.GetFromJsonAsync<List<string>>("api/Recommendation/getgenres") ?? new List<string>();
         }
     }
 }
