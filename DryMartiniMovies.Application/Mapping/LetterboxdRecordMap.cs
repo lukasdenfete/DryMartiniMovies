@@ -1,7 +1,7 @@
 ﻿using CsvHelper.Configuration;
 using DryMartiniMovies.Core.Import;
 
-namespace DryMartiniMovies.Infrastructure.Mapping
+namespace DryMartiniMovies.Application.Mapping
 {
     public class LetterboxdRecordMap : ClassMap<LetterboxdRecord>
     {

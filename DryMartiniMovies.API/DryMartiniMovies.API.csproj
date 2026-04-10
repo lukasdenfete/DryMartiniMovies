@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DryMartiniMovies.Infrastructure\DryMartiniMovies.Infrastructure.csproj" />
+    <ProjectReference Include="..\DryMartiniMovies.Application\DryMartiniMovies.Application.csproj" />
   </ItemGroup>
 
 </Project>

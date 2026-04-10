@@ -1,23 +1,20 @@
 ﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
-using Microsoft.Extensions.Configuration;
 
 
-namespace DryMartiniMovies.Infrastructure.Services
+namespace DryMartiniMovies.Application.Services
 {
     public class MovieService : IMovieService
     {
         private readonly IMovieRepository _movieRepository;
         private readonly ITmdbService _tmdbService;
-        private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
 
-        public MovieService(IMovieRepository movieRepository, ITmdbService tmdbService, IConfiguration config, IUserRepository userRepository)
+        public MovieService(IMovieRepository movieRepository, ITmdbService tmdbService, IUserRepository userRepository)
         {
             _movieRepository = movieRepository;
             _tmdbService = tmdbService;
-            _config = config;
             _userRepository = userRepository;
         }
 
@@ -30,9 +27,8 @@ namespace DryMartiniMovies.Infrastructure.Services
         {
             return await _tmdbService.SearchMovieAsync(title, year);
         }
-        public async Task<UserMovie?> GetMovieAsync(int tmdbId)
+        public async Task<UserMovie?> GetMovieAsync(string userId, int tmdbId)
         {
-            var userId = _config["App:DefaultUserId"] ?? "1";
             return await _movieRepository.GetUserMovieAsync(userId, tmdbId);
         }
         public async Task<StatsDto> GetUserStatsAsync(string userId)

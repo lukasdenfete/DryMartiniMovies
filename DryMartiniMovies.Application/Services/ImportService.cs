@@ -3,12 +3,12 @@ using CsvHelper.Configuration;
 using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Import;
 using DryMartiniMovies.Core.Interfaces;
-using DryMartiniMovies.Infrastructure.Mapping;
+using DryMartiniMovies.Application.Mapping;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 
 
-namespace DryMartiniMovies.Infrastructure.Services
+namespace DryMartiniMovies.Application.Services
 {
     public class ImportService : IImportService
     {

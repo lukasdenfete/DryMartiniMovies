@@ -50,7 +50,8 @@ namespace DryMartiniMovies.API.Controllers
         [HttpGet("{tmdbId:int}")]
         public async Task<IActionResult> GetMovie(int tmdbId)
         {
-            var movie = await _movieService.GetMovieAsync(tmdbId);
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var movie = await _movieService.GetMovieAsync(userId, tmdbId);
             if (movie == null) return NotFound();
             return Ok(movie);
         }

@@ -3,6 +3,7 @@ using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Infrastructure.Neo4j;
 using DryMartiniMovies.Infrastructure.Repositories;
 using DryMartiniMovies.Infrastructure.Services;
+using DryMartiniMovies.Application.Services;
 using Scalar.AspNetCore;
 using OpenAI.Chat;
 using OpenAI;

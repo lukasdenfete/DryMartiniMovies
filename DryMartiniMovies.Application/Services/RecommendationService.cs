@@ -1,10 +1,10 @@
 ﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
-using DryMartiniMovies.Infrastructure.Services;
+using DryMartiniMovies.Application.Services;
 using Microsoft.Extensions.Logging;
 
-namespace DryMartiniMovies.Infrastructure.Services
+namespace DryMartiniMovies.Application.Services
 {
     public class RecommendationService : IRecommendationService
     {
