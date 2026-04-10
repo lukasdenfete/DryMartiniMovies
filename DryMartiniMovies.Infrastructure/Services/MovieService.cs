@@ -45,6 +45,10 @@ namespace DryMartiniMovies.Infrastructure.Services
         public async Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId){
             return await _movieRepository.GetRecentMoviesAsync(userId);
         }
+        public async Task<bool> RemoveRatingAsync(string userId, int tmdbId)
+        {
+            return await _userRepository.RemoveRatingAsync(userId, tmdbId);
+        }
         public async Task<bool> AddMovieAsync(string title, int year, string userId, float rating, DateTime watchedDate)
         {   
             var movie = await _tmdbService.SearchMovieAsync(title, year);

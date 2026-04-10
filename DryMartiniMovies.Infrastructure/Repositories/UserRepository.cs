@@ -1,6 +1,9 @@
-﻿using DryMartiniMovies.Core.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Infrastructure.Neo4j;
+using Microsoft.VisualBasic;
+using Neo4j.Driver;
 
 namespace DryMartiniMovies.Infrastructure.Repositories
 {
@@ -38,6 +41,20 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     rating,
                     watchedDate = watchedDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)
                 });
+        }
+
+        public async Task<bool> RemoveRatingAsync(string userId, int tmdbId)
+        {
+            await using var session = _context.OpenSession();
+            var cursor = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})
+                MATCH (m:Movie {tmdbId: $tmdbId})
+                MATCH (u)-[r:RATED]->(m)
+                DELETE r",
+                new { userId, tmdbId });
+            var result = await cursor.ConsumeAsync();
+            var count = result.Counters.RelationshipsDeleted;
+            return count > 0;
         }
         public Task<User?> GetByIdAsync(string id)
         {

@@ -99,5 +99,12 @@ namespace DryMartiniMovies.API.Controllers
                 return NotFound();
             }
         }
+        [HttpDelete("{tmdbId:int}")]
+        public async Task<IActionResult> RemoveRating(int tmdbId)
+        {
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var result = await _movieService.RemoveRatingAsync(userId, tmdbId);
+            return Ok(result);
+        }
     }
 }

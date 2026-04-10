@@ -32,6 +32,9 @@ else if (userMovie != null) {
                         <span class="badge bg-secondary me-1">@genre.Name</span>
                     }
                 </div>
+                <div class="mt-3">
+                    <RemoveRating TmdbId="@TmdbId" OnRatingRemoved='() => Navigation.NavigateTo(From ?? "/movies")' />
+                </div>
             </div>
         </div>
         <div class="movie-crew mt-4">

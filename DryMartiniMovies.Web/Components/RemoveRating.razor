@@ -1,0 +1,30 @@
+@inject MovieApiService MovieApiService
+
+<button class="btn btn-outline-danger btn-sm" @onclick="HandleRemove">
+    Ta bort från sedda filmer
+</button>
+
+@if (successMessage != null)
+{
+    <div class="alert alert-success mt-2 mb-0 py-2">@successMessage</div>
+}
+
+
+
+
+
+
+@code {
+    [Parameter] public EventCallback OnRatingRemoved {get; set;}
+    [Parameter] public int TmdbId {get; set;}
+    private string? successMessage;
+
+    private async Task HandleRemove(){
+        bool removed = await MovieApiService.RemoveRating(TmdbId);
+        if(removed){
+            successMessage = "Filmen har nu tagits bort från dina sedda filmer.";
+            await Task.Delay(1000);
+            await OnRatingRemoved.InvokeAsync();
+        }
+    }
+}
