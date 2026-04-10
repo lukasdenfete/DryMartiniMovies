@@ -1,0 +1,174 @@
+.add-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1rem 0 3rem;
+}
+
+.page-title {
+    margin-bottom: 1.5rem;
+}
+
+/* Search card */
+.search-card {
+    background: #1a1a2e;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    margin-bottom: 2rem;
+}
+
+.dark-input {
+    background-color: #0d0d1a;
+    color: #fff;
+    border-color: #3a3a5e;
+}
+
+.dark-input:focus {
+    background-color: #0d0d1a;
+    color: #fff;
+    border-color: #1b6ec2;
+    box-shadow: 0 0 0 0.15rem rgba(27, 110, 194, 0.35);
+}
+
+.dark-input::placeholder {
+    color: #666;
+}
+
+.year-input {
+    width: 100px;
+}
+
+/* Result card */
+.result-card {
+    background: #1a1a2e;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    gap: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.result-poster-wrap {
+    flex-shrink: 0;
+    width: 160px;
+}
+
+.result-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.result-info {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.result-title {
+    margin: 0;
+    color: #fff;
+    font-size: 1.3rem;
+}
+
+.result-year {
+    margin: 0;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.result-desc {
+    color: #bbb;
+    font-size: 0.88rem;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.result-credits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+}
+
+.actors-row {
+    margin-top: 0.3rem;
+}
+
+.credit-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin-right: 0.35rem;
+    margin-bottom: 0.25rem;
+}
+
+.credit-badge.director {
+    background: rgba(27, 110, 194, 0.25);
+    color: #7ab8f5;
+    border: 1px solid rgba(27, 110, 194, 0.4);
+}
+
+.credit-badge.actor {
+    background: rgba(255,255,255,0.07);
+    color: #aaa;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Confirm section */
+.confirm-section {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #2a2a3e;
+}
+
+.confirm-label {
+    color: #ccc;
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+}
+
+/* Rating form */
+.rating-form {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #2a2a3e;
+}
+
+/* Success banner */
+.success-banner {
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid rgba(40, 167, 69, 0.4);
+    color: #6dd98c;
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* Mobile */
+@media (max-width: 540px) {
+    .result-card {
+        flex-direction: column;
+    }
+
+    .result-poster-wrap {
+        width: 100%;
+        max-height: 280px;
+        overflow: hidden;
+    }
+
+    .result-poster {
+        object-position: top;
+    }
+
+    .year-input {
+        width: 100%;
+    }
+}

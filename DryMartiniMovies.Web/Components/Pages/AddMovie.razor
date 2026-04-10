@@ -2,51 +2,89 @@
 @inject MovieApiService MovieApiService
 @rendermode InteractiveServer
 
-<div>
-    <form>
-        <input type="text" @bind="title" placeholder="Titel" />
-        <input type="text" @bind="year" placeholder="År" />
-        <button type="button" @onclick="HandleSearchMovie">Sök</button>
-    </form>
-</div>
-@if (movie != null) 
-{
-    <div class="movie-card">
-        <img src="@($"https://image.tmdb.org/t/p/w300{@movie.PosterPath}")" alt="@movie.Title"/>
-        <div class="movie-info">
-            <h6>@movie.Title</h6>
-            <p>@movie.Year</p>
-            <p>@movie.Description</p>
-            @foreach (var director in movie.Directors){
-                <p>@director</p>
-            }
-            @foreach (var actor in movie.Actors){
-                <p>@actor</p>
-            }
-        </div>
+<div class="add-page">
+    <h2 class="page-title">Lägg till film</h2>
+
+    <div class="search-card">
+        <form @onsubmit="HandleSearchMovie">
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-sm">
+                    <label class="form-label">Titel</label>
+                    <input class="form-control dark-input" type="text" @bind="title" placeholder="t.ex. Dune" />
+                </div>
+                <div class="col-6 col-sm-auto">
+                    <label class="form-label">År</label>
+                    <input class="form-control dark-input year-input" type="number" @bind="year" placeholder="2024" />
+                </div>
+                <div class="col-6 col-sm-auto">
+                    <button class="btn btn-primary w-100" type="submit">Sök</button>
+                </div>
+            </div>
+        </form>
     </div>
-    <div>
-        <p>Menar du denna film?</p>
-        <button type="button" @onclick="() => isRight = true">Ja</button>
-        <button type="button"@onclick="HandleNo">Nej</button>
-    </div>
-    if (isRight)
+
+    @if (movie != null)
     {
-        <div>
-            <form>
-                <input type="number" @bind="userRating" placeholder="Betyg" />
-                <input type="date" @bind="watchedDate" placeholder="DateTime.Now" />
-                <button type="button" @onclick="HandleSaveMovie">Lägg till</button>
-            </form>
-            @if (!string.IsNullOrEmpty(successMessage))
-            {
-                <p>@successMessage</p>
-            }
+        <div class="result-card">
+            <div class="result-poster-wrap">
+                <img src="@($"https://image.tmdb.org/t/p/w300{movie.PosterPath}")" alt="@movie.Title" class="result-poster" />
+            </div>
+            <div class="result-info">
+                <h4 class="result-title">@movie.Title</h4>
+                <p class="result-year">@movie.Year</p>
+                <p class="result-desc">@movie.Description</p>
+                <div class="result-credits">
+                    @foreach (var director in movie.Directors)
+                    {
+                        <span class="credit-badge director">Regissör: @director</span>
+                    }
+                </div>
+                <div class="result-credits actors-row">
+                    @foreach (var actor in movie.Actors)
+                    {
+                        <span class="credit-badge actor">@actor</span>
+                    }
+                </div>
+
+                @if (!isRight)
+                {
+                    <div class="confirm-section">
+                        <p class="confirm-label">Menar du denna film?</p>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success" type="button" @onclick="() => isRight = true">Ja, det stämmer</button>
+                            <button class="btn btn-outline-secondary" type="button" @onclick="HandleNo">Nej, sök igen</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="rating-form">
+                        <div class="row g-3">
+                            <div class="col-12 col-sm-4">
+                                <label class="form-label">Ditt betyg</label>
+                                <input class="form-control dark-input" type="number" step="0.5" min="0" max="10" @bind="userRating" placeholder="0–10" />
+                            </div>
+                            <div class="col-12 col-sm-8">
+                                <label class="form-label">Sett datum</label>
+                                <input class="form-control dark-input" type="date" @bind="watchedDate" />
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" type="button" @onclick="HandleSaveMovie">Lägg till film</button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(successMessage))
+                        {
+                            <div class="success-banner mt-3">@successMessage</div>
+                        }
+                    </div>
+                }
+            </div>
         </div>
     }
-}
+</div>
+
 @code {
-    private string title;
+    private string title = "";
     private int year;
     private float userRating;
     private DateTime watchedDate;
@@ -54,27 +92,36 @@
     private bool isRight;
     private string successMessage = "";
 
+    protected override void OnInitialized()
+    {
+        watchedDate = DateTime.Today;
+    }
+
     private async Task HandleSearchMovie()
     {
+        isRight = false;
+        successMessage = "";
         movie = await MovieApiService.SearchTmdb(title, year);
     }
+
     private void HandleNo()
     {
         movie = null;
         isRight = false;
     }
+
     private async Task HandleSaveMovie()
     {
-        var result = await MovieApiService.AddMovie(new AddMovieDto {
+        var result = await MovieApiService.AddMovie(new AddMovieDto
+        {
             Title = title,
             Year = year,
             UserRating = userRating,
             WatchedDate = watchedDate
         });
-        if(result)
+        if (result)
         {
             successMessage = "Filmen har sparats!";
         }
     }
-
 }
