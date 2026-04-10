@@ -32,12 +32,17 @@ else if (pace != null)
     {
         Chart = new Chart
         {
+            Height = 220,
             Background = "#1a1a2e",
-            ForeColor = "#ffffff"
+            ForeColor = "#ffffff",
+            Zoom = new Zoom { Enabled = false, AllowMouseWheelZoom = false },
+            Toolbar = new Toolbar { Show = false },
+            Selection = new Selection { Enabled = false}
+
         },
         Theme = new Theme { Mode = Mode.Dark },
         Stroke = new Stroke { Curve = Curve.Smooth, Width = 3 },
-        Grid = new Grid { BorderColor = "#333" }
+        Grid = new Grid { BorderColor = "#333" },
     };
 
     protected override async Task OnInitializedAsync()

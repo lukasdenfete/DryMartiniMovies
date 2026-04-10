@@ -9,15 +9,21 @@
         <HomeOverview />
     </div>
 </div>
-<div class="mt-4">
-    <Recent />
-</div>
-<div class="mt-4 pace-card">
-    <h3 class="pace-card-title">Senaste året</h3>
-    <Pace />
+<div class="home-sections">
+    <div class="mt-4">
+        <Recent />
+    </div>
+    <div class="mt-4 pace-card">
+        <h3 class="pace-card-title">Senaste året</h3>
+        <Pace />
+    </div>
 </div>
 <Chat />
 <style>
+    .home-sections {
+        max-width: 1100px;
+    }
+
     .pace-card {
         background: #1a1a2e;
         border-radius: 8px;
