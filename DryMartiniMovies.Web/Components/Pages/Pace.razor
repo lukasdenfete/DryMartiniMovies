@@ -13,6 +13,7 @@
 }
 else if (pace != null)
 {
+    <h3 class="pace-card-title">Senaste året: @pace.Sum(p => p.Count) filmer</h3>
     <ApexChart TItem="PaceDto"
                Title="Filmer per månad"
                Options="chartOptions">
@@ -43,6 +44,7 @@ else if (pace != null)
         Theme = new Theme { Mode = Mode.Dark },
         Stroke = new Stroke { Curve = Curve.Smooth, Width = 3 },
         Grid = new Grid { BorderColor = "#333" },
+        Tooltip = new Tooltip { X = new TooltipX { Show = false } },
     };
 
     protected override async Task OnInitializedAsync()

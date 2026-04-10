@@ -7,11 +7,19 @@
 main {
     flex: 1;
     min-width: 0;
-    overflow-x: hidden;
+    overflow-x: clip;
+}
+
+article.content {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .top-row {
@@ -50,12 +58,12 @@ main {
 
 @media (min-width: 641px) {
     .page {
-        flex-direction: row;
+        flex-direction: column;
     }
 
     .sidebar {
-        width: 250px;
-        height: 100vh;
+        width: 100%;
+        height: auto;
         position: sticky;
         top: 0;
         flex-shrink: 0;

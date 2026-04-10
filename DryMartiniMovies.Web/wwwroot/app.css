@@ -1,8 +1,15 @@
+html {
+    scrollbar-gutter: stable;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    overflow-x: hidden;
     background-color: #0d0d1a;
     color: white;
+}
+
+body {
+    overflow-x: clip;
 }
 
 /* Dark mode overrides for Bootstrap components */
@@ -172,6 +179,22 @@ h1:focus {
     font-size: 0.8rem;
     margin-top: auto;
     padding-top: 0.25rem;
+}
+
+.movie-header {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.movie-header img {
+    border-radius: 8px;
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.movie-header-info {
+    flex: 1;
+    min-width: 0;
 }
 
 @media (max-width: 640px) {

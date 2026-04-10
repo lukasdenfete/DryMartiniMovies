@@ -15,10 +15,10 @@ else if (stats != null)
 {
     <div class="stats-container">
         <h3 class="mb-4">Min sammanfattning</h3>
-        <div class="stat-card">
+        <a class="stat-card" href="/movies">
             <h2>@stats.TotalMovies</h2>
             <p>sedda filmer</p>
-        </div>
+        </a>
         <div class="stat-card">
             <h2>@stats.AverageRating.ToString("0.00")</h2>
             <p>genomsnittsbetyg</p>
@@ -38,6 +38,24 @@ else if (stats != null)
     </div>
 }
 <style>
+@@media (max-width: 640px) {
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .stats-container h3 {
+        grid-column: 1 / -1;
+    }
+
+    .stats-container .stat-card {
+        margin: 0;
+        width: 100%;
+        min-width: unset;
+    }
+}
+
 .stats-container h3 {
     color: #ccc;
     font-size: 1.4rem;

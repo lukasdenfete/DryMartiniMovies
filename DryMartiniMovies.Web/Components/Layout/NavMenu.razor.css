@@ -18,10 +18,27 @@
 .top-row {
     min-height: 3.5rem;
     background-color: rgba(0,0,0,0.4);
+    justify-content: center;
+    position: relative;
+}
+
+.nav-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+}
+
+@media (min-width: 641px) {
+    .nav-container {
+        padding: 0 1.5rem 0 2rem;
+    }
 }
 
 .navbar-brand {
     font-size: 1.1rem;
+    margin-right: 2rem;
 }
 
 .bi {
@@ -42,16 +59,7 @@
 
 .nav-item {
     font-size: 0.9rem;
-    padding-bottom: 0.5rem;
 }
-
-    .nav-item:first-of-type {
-        padding-top: 1rem;
-    }
-
-    .nav-item:last-of-type {
-        padding-bottom: 1rem;
-    }
 
     .nav-item ::deep .nav-link {
         color: #d7d7d7;
@@ -62,7 +70,6 @@
         display: flex;
         align-items: center;
         line-height: 3rem;
-        width: 100%;
     }
 
 .nav-item ::deep a.active {
@@ -81,6 +88,19 @@
 
 .navbar-toggler:checked ~ .nav-scrollable {
     display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 100;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-toggler:checked ~ .nav-scrollable .nav {
+    flex-direction: column !important;
 }
 
 @media (min-width: 641px) {
@@ -89,11 +109,6 @@
     }
 
     .nav-scrollable {
-        /* Never collapse the sidebar for wide screens */
         display: block;
-
-        /* Allow sidebar to scroll for tall menus */
-        height: calc(100vh - 3.5rem);
-        overflow-y: auto;
     }
 }

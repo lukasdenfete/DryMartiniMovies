@@ -3,7 +3,7 @@
 @inject MovieApiService MovieApiService
 @inject NavigationManager Navigation
 
-<h3 class="section-title">Nyligen sett</h3>
+<h1>Nyligen sett</h1>
 <ErrorMessage Message="@errorMessage"/>
 
 @if (recentMovies == null && errorMessage == null){
@@ -27,16 +27,6 @@ else if (recentMovies != null) {
 </div>
 
 }
-<style>
-    .section-title {
-        color: #ccc;
-        font-size: 1.4rem;
-        font-weight: 600;
-        letter-spacing: normal;
-        text-transform: none;
-        margin-bottom: 0.5rem;
-    }
-</style>
 
 @code {
     private List<MovieDto>? recentMovies;
