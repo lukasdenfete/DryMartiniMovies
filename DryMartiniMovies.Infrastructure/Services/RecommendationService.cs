@@ -21,8 +21,10 @@ namespace DryMartiniMovies.Infrastructure.Services
 
         public async Task<IEnumerable<RecommendationDto>> GetByFavoriteDirectorsAsync(string userId, int limit = 10)
         {
-            var directors = (await _movieRepository.GetFavoriteDirectorsAsync(userId)).ToList();
-            var seenMovies = await _movieRepository.GetUserMoviesWithRatingsAsync(userId);
+            var directorsTask = _movieRepository.GetFavoriteDirectorsAsync(userId);
+            var seenMoviesTask = _movieRepository.GetUserMoviesWithRatingsAsync(userId);
+            var directors = (await directorsTask).ToList();
+            var seenMovies = await seenMoviesTask;
             var seenTmdbIds = seenMovies.Select(m => m.Movie.TmdbId).ToHashSet();
 
             var tasks = directors.Select(director => _tmdbService.GetMoviesByDirectorAsync(director.TmdbId));
