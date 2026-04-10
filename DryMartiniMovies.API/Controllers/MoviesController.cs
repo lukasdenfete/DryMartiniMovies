@@ -11,9 +11,9 @@ namespace DryMartiniMovies.API.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly IConfiguration _config;
-        private readonly TmdbService _tmdbService;
+        private readonly ITmdbService _tmdbService;
 
-        public MoviesController(IMovieService movieService, IConfiguration config, TmdbService tmdbService)
+        public MoviesController(IMovieService movieService, IConfiguration config, ITmdbService tmdbService)
         {
             _movieService = movieService;
             _config = config;
@@ -33,7 +33,19 @@ namespace DryMartiniMovies.API.Controllers
         {
             var movie = await _movieService.SearchTmdbAsync(title, year);
             if (movie == null) return NotFound();
-            return Ok(movie);
+            return Ok(new MovieDto
+            {
+                Id = movie.TmdbId.ToString(),
+                TmdbId = movie.TmdbId,
+                Title = movie.Title,
+                Year = movie.Year,
+                Description = movie.Description,
+                PosterPath = movie.PosterPath,
+                TmdbRating = movie.TmdbRating,
+                Genres = movie.Genres.Select(g => g.Name).ToList(),
+                Directors = movie.Directors.Select(d => d.Name).ToList(),
+                Actors = movie.Actors.Select(a => a.Name).ToList(),
+            });
         }
         [HttpGet("{tmdbId:int}")]
         public async Task<IActionResult> GetMovie(int tmdbId)
@@ -73,6 +85,19 @@ namespace DryMartiniMovies.API.Controllers
             var userId = _config["App:DefaultUserId"] ?? "1";
             var recentMovies = await _movieService.GetRecentMoviesAsync(userId);
             return Ok(recentMovies);
+        }
+        [HttpPost("add")]
+        public async Task<IActionResult> AddMovie([FromBody] AddMovieDto addMovieDto){
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var result = await _movieService.AddMovieAsync(addMovieDto.Title, addMovieDto.Year, userId, addMovieDto.UserRating, addMovieDto.WatchedDate);
+            if (result == true) 
+            {
+                return Ok();
+            } 
+            else 
+            {
+                return NotFound();
+            }
         }
     }
 }

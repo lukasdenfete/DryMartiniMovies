@@ -9,10 +9,12 @@ namespace DryMartiniMovies.API.Controllers
     public class RecommendationController : ControllerBase
     {
         private readonly IRecommendationService _recommendationService;
+        private readonly ITmdbService _tmdbService;
 
-        public RecommendationController(IRecommendationService recommendationService)
+        public RecommendationController(IRecommendationService recommendationService, ITmdbService tmdbService)
         {
             _recommendationService = recommendationService;
+            _tmdbService = tmdbService;
         }
 
         [HttpGet("directors")]
@@ -28,9 +30,15 @@ namespace DryMartiniMovies.API.Controllers
             return Ok(result);
         }
         [HttpGet("genres")]
-        public async Task<IActionResult> ByGenres([FromQuery] string userId, [FromQuery] int limit = 10)
+        public async Task<IActionResult> ByGenres([FromQuery] string userId, [FromQuery] string? genreName, [FromQuery] int limit = 10)
         {
-            var result = await _recommendationService.GetByFavoriteGenresAsync(userId, limit);
+            var result = await _recommendationService.GetByGenresAsync(userId, genreName, limit);
+            return Ok(result);
+        }
+        [HttpGet("getgenres")]
+        public IActionResult GetGenres()
+        {
+            var result = _tmdbService.GetGenres();
             return Ok(result);
         }
     }

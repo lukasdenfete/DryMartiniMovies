@@ -74,7 +74,7 @@ ChatTool getRecommendationsByActorsTool = ChatTool.CreateFunctionTool(
 );
 ChatTool getRecommendationsByGenreTool = ChatTool.CreateFunctionTool(
     functionName: GetRecommendationsByGenre,
-    functionDescription: "Get recommendations for new movies to watch based on genres the user have rated highly.",
+    functionDescription: "Get recommendations for new movies to watch based on genre.",
     functionParameters: BinaryData.FromString(@"
     {
         ""type"": ""object"",
@@ -82,6 +82,10 @@ ChatTool getRecommendationsByGenreTool = ChatTool.CreateFunctionTool(
             ""userId"": {
                 ""type"": ""string"",
                 ""description"": ""The unique ID of a specific user.""
+            },
+            ""genreName"": {
+                ""type"": ""string"",
+                ""description"": ""The name of a genre""
             }
         },
         ""required"": [ ""userId"" ]

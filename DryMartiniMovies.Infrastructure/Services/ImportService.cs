@@ -12,12 +12,12 @@ namespace DryMartiniMovies.Infrastructure.Services
 {
     public class ImportService : IImportService
     {
-        private readonly TmdbService _tmdbService;
+        private readonly ITmdbService _tmdbService;
         private readonly ILogger<ImportService> _logger;
         private readonly IMovieRepository _movieRepository;
         private readonly IUserRepository _userRepository;
 
-        public ImportService(TmdbService tmdbService, ILogger<ImportService> logger, IMovieRepository movieRepository, IUserRepository userRepository)
+        public ImportService(ITmdbService tmdbService, ILogger<ImportService> logger, IMovieRepository movieRepository, IUserRepository userRepository)
         {
             _tmdbService = tmdbService;
             _logger = logger;

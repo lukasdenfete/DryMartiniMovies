@@ -19,7 +19,7 @@ else if (recentMovies != null) {
         <img src="@($"https://image.tmdb.org/t/p/w300{@movie.PosterPath}")" alt="@movie.Title"/>
         <div class="movie-info">
             <h6>@movie.Title</h6>
-            <div class="rating">Ditt betyg: @movie.UserRating /5</div>
+            <div class="rating">Ditt betyg: @movie.UserRating/5</div>
             <small>Såg den: @movie.WatchedDate?.ToString("yyyy-MM-dd")</small>
         </div>
     </div>

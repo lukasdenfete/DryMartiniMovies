@@ -1,4 +1,5 @@
 ﻿using DryMartiniMovies.Core.Models;
+using DryMartiniMovies.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using TMDbLib.Client;
 using TMDbLib.Objects.Discover;
@@ -6,7 +7,7 @@ using TMDbLib.Objects.Movies;
 
 namespace DryMartiniMovies.Infrastructure.Services
 {
-    public class TmdbService 
+    public class TmdbService : ITmdbService
     {
         private readonly TMDbClient _client;
         private static readonly Dictionary<string, int> GenreIds = new()
@@ -168,6 +169,11 @@ namespace DryMartiniMovies.Infrastructure.Services
                     PosterPath = m.PosterPath,
                     TmdbRating = m.VoteAverage,
                 }).ToList();
+        }
+        public List<string> GetGenres()
+        {
+            var genres = GenreIds.Keys.ToList();
+            return genres;
         }
     }
 }
