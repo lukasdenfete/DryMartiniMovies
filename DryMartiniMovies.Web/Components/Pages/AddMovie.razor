@@ -1,5 +1,6 @@
 @page "/add"
 @inject MovieApiService MovieApiService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <div class="add-page">
@@ -122,6 +123,9 @@
         if (result)
         {
             successMessage = "Filmen har sparats!";
+            StateHasChanged();
+            await Task.Delay(2000);
+            NavigationManager.NavigateTo("/add", forceLoad: true);
         }
     }
 }
