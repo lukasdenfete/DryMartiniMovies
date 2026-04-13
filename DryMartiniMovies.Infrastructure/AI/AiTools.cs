@@ -3,12 +3,12 @@ using OpenAI.Chat;
 public class AiTools {
 public const string GetUserStats = "get_user_stats";
 public const string GetRecentMovies = "get_recent_movies";
-public const string GetUserMovies = "get_user_movies";
 public const string GetRecommendationsByDirectors = "get_recommendations_by_directors";
 
 public const string GetRecommendationsByActors = "get_recommendations_by_actors";
 
 public const string GetRecommendationsByGenre = "get_recommendations_by_genre";
+public const string GetUserPace = "get_user_pace";
 
 public static List<ChatTool> GetTools(){
 
@@ -91,6 +91,21 @@ ChatTool getRecommendationsByGenreTool = ChatTool.CreateFunctionTool(
         ""required"": [ ""userId"" ]
     }")
 );
-    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool };
+ChatTool getUserPaceTool = ChatTool.CreateFunctionTool(
+    functionName: GetUserPace,
+    functionDescription: "Get the amount of movies watched per month for the last 12 months for a specific user.",
+    functionParameters: BinaryData.FromString(@"
+    {
+        ""type"": ""object"",
+        ""properties"": {
+            ""userId"": {
+                ""type"": ""string"",
+                ""description"": ""The unique ID of a specific user.""
+            }
+        },
+        ""required"": [ ""userId"" ]
+    }")
+);
+    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool, getUserPaceTool };
 }
 }

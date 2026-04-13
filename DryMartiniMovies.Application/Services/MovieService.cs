@@ -35,8 +35,14 @@ namespace DryMartiniMovies.Application.Services
         {
             return await _movieRepository.GetUserStatsAsync(userId);
         }
-        public async Task<IEnumerable<PaceDto>> GetUserPaceAsync(string userId){
-            return await _movieRepository.GetUserPaceAsync(userId);
+        public async Task<PaceResultDto> GetUserPaceAsync(string userId){
+            var monthlyPace = await _movieRepository.GetUserPaceAsync(userId);
+            var total = monthlyPace.Sum(p => p.Count);
+            return new PaceResultDto
+            {
+                MonthlyPace = monthlyPace,
+                TotalCount = total
+            };
         }
         public async Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId){
             return await _movieRepository.GetRecentMoviesAsync(userId);
