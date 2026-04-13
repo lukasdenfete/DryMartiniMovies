@@ -107,5 +107,12 @@ namespace DryMartiniMovies.API.Controllers
             var result = await _movieService.RemoveRatingAsync(userId, tmdbId);
             return Ok(result);
         }
+        [HttpGet("history")]
+        public async Task<IActionResult> GetUserHistory(string title)
+        {
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var result = await _movieService.SearchUserHistoryAsync(title, userId);
+            return Ok(result);
+        }
     }
 }

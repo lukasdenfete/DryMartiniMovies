@@ -13,4 +13,5 @@ public interface IMovieService
     Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId);
     Task<bool> AddMovieAsync(string title, int year, string userId, float rating, DateTime watchedDate);
     Task<bool> RemoveRatingAsync(string userId, int tmdbId);
+    Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId);
 }

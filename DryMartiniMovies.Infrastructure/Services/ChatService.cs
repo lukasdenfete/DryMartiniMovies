@@ -91,6 +91,14 @@ namespace DryMartiniMovies.Infrastructure.Services
                             Console.WriteLine(toolResult);
                             messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                             break;
+                        
+                        case AiTools.SearchUserHistory:
+                            args = JsonDocument.Parse(toolCall.FunctionArguments);
+                            var title = args.RootElement.TryGetProperty("title", out prop) ? prop.GetString() : null;
+                            var movieHistory = await _movieService.SearchUserHistoryAsync(title, _userId);
+                            toolResult = JsonSerializer.Serialize(movieHistory);
+                            messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                            break;
                     }
                 }
                 response = await _chatClient.CompleteChatAsync(messages, options);

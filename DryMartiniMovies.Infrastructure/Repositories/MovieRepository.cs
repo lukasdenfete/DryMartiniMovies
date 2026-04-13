@@ -160,6 +160,37 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 Movie = MapMovie(record)
             };
         }
+        
+        public async Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId)
+        {
+            await using var session = _context.OpenSession();
+            var result = await session.RunAsync(@"
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
+                WHERE toLower(m.title) CONTAINS toLower($title)
+                RETURN m,
+                    r.rating AS rating,
+                    r.watchedDate AS watchedDate
+                LIMIT 20",
+                new { title, userId });
+
+            var records = await result.ToListAsync();
+ 
+            return records.Select(r => {
+                var node = r["m"].As<INode>();
+                var movieTitle = node["title"].As<string>();
+                return new UserMovie
+            {
+                UserId = userId,
+                Movie = new Movie { Title = movieTitle },
+                Rating = r["rating"].As<float>(),
+                WatchedDate = DateTime.TryParseExact(
+                    r["watchedDate"].As<string>(),
+                    "yyyy-MM-dd",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out var date) ? date : DateTime.MinValue,
+            };});
+        }
         public async Task<StatsDto> GetUserStatsAsync(string userId)
         {
             await using var session = _context.OpenSession();

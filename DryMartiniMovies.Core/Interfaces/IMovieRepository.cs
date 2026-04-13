@@ -15,4 +15,5 @@ public interface IMovieRepository
     Task<IEnumerable<(string Name, double AvgRating)>> GetFavoriteGenresAsync(string userId, int minMovies = 5);
     Task<IEnumerable<PaceDto>> GetUserPaceAsync(string userId);
     Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId);
+    Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId);
 }

@@ -6,6 +6,7 @@ GetRecommendationsByDirectors = Gets recommendations on unwatched movies based o
 GetRecommendationsByActors = Gets recommendations on unwatched movies based on actors the user likes.
 GetRecommendationsByGenre = Gets recommendations on unwatched movies based on genres the user likes.
 GetUserPace = Gets how many movies the user has watched per month in the last 12 months.
+SearchUserHistory = Searches for a specific movie title in the user's history of rated movies.
 
 If the user asks for recommendations without specifying a preference, default to GetRecommendationsByDirectors only.
 

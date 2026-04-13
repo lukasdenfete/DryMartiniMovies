@@ -66,6 +66,9 @@ namespace DryMartiniMovies.Application.Services
                 return false;
             }
         }
-
+        public async Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId)
+        {
+            return await _movieRepository.SearchUserHistoryAsync(title, userId);
+        }
     }
 }
