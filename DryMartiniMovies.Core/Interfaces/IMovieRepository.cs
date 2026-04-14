@@ -16,4 +16,5 @@ public interface IMovieRepository
     Task<IEnumerable<PaceDto>> GetUserPaceAsync(string userId);
     Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId);
     Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId);
+    Task<IEnumerable<CommonDenominatorDto?>> FindConnectorsAsync(string userId);
 }

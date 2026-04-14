@@ -1,4 +1,5 @@
 ﻿using DryMartiniMovies.Core.DTOs;
+using DryMartiniMovies.Core.Enums;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Infrastructure.Neo4j;
@@ -384,6 +385,27 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     System.Globalization.DateTimeStyles.None,
                     out var date) ? date : null
             });     
+        }
+
+        public async Task<IEnumerable<CommonDenominatorDto>> FindConnectorsAsync(string userId)
+        {
+            await using var session = _context.OpenSession();
+            var result = await session.RunAsync(@"
+            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
+            RETURN r.rating AS rating, d.name AS name, ""Director"" AS role, m.title AS movieTitle
+            UNION ALL 
+            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
+            RETURN r.rating AS rating, a.name AS name, ""Actor"" AS role, m.title AS movieTitle",
+                new { userId });
+            
+            var records = await result.ToListAsync();
+            return records.Select(r => new CommonDenominatorDto
+            {
+                Name = r["name"].As<string>(),
+                Rating = r["rating"].As<float>(),
+                Role = new [] { Enum.Parse<PersonRole>(r["role"].As<string>()) },
+                MovieTitle = r["movieTitle"].As<string>()
+            });
         }
     }
 }

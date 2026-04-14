@@ -114,5 +114,12 @@ namespace DryMartiniMovies.API.Controllers
             var result = await _movieService.SearchUserHistoryAsync(title, userId);
             return Ok(result);
         }
+        [HttpGet("connectors")]
+        public async Task<IActionResult> FindConnectors()
+        {
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var result = await _movieService.FindConnectorsAsync(userId);
+            return Ok(result);
+        }
     }
 }

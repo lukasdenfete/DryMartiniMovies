@@ -90,5 +90,9 @@ namespace DryMartiniMovies.Web.Services
             if (!response.IsSuccessStatusCode) return false;
             return true;
         }
+        public async Task<List<PersonScoreDto>> GetConnectorsAsync()
+        {
+            return await _http.GetFromJsonAsync<List<PersonScoreDto>>("api/movies/connectors") ?? new List<PersonScoreDto>();
+        }
     }
 }

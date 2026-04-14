@@ -94,6 +94,7 @@ namespace DryMartiniMovies.Infrastructure.Services
                         
                         case AiTools.SearchUserHistory:
                             args = JsonDocument.Parse(toolCall.FunctionArguments);
+                            Console.WriteLine(toolCall.FunctionArguments);
                             var title = args.RootElement.TryGetProperty("title", out prop) ? prop.GetString() : null;
                             var movieHistory = await _movieService.SearchUserHistoryAsync(title, _userId);
                             toolResult = JsonSerializer.Serialize(movieHistory);
