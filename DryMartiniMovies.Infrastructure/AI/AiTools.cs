@@ -3,12 +3,13 @@ using OpenAI.Chat;
 public class AiTools {
 public const string GetUserStats = "get_user_stats";
 public const string GetRecentMovies = "get_recent_movies";
-public const string GetUserMovies = "get_user_movies";
 public const string GetRecommendationsByDirectors = "get_recommendations_by_directors";
 
 public const string GetRecommendationsByActors = "get_recommendations_by_actors";
 
 public const string GetRecommendationsByGenre = "get_recommendations_by_genre";
+public const string GetUserPace = "get_user_pace";
+public const string SearchUserHistory = "search_user_history";
 
 public static List<ChatTool> GetTools(){
 
@@ -91,6 +92,40 @@ ChatTool getRecommendationsByGenreTool = ChatTool.CreateFunctionTool(
         ""required"": [ ""userId"" ]
     }")
 );
-    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool };
+ChatTool getUserPaceTool = ChatTool.CreateFunctionTool(
+    functionName: GetUserPace,
+    functionDescription: "Get the amount of movies watched per month for the last 12 months for a specific user.",
+    functionParameters: BinaryData.FromString(@"
+    {
+        ""type"": ""object"",
+        ""properties"": {
+            ""userId"": {
+                ""type"": ""string"",
+                ""description"": ""The unique ID of a specific user.""
+            }
+        },
+        ""required"": [ ""userId"" ]
+    }")
+);
+ChatTool searchUserHistoryTool = ChatTool.CreateFunctionTool(
+    functionName: SearchUserHistory,
+    functionDescription: "Searches for a specific movie (by title) in the user's watched movies",
+    functionParameters: BinaryData.FromString(@"
+    {
+        ""type"": ""object"",
+        ""properties"": {
+            ""title"": {
+                ""type"": ""string"",
+                ""description"": ""The title of the movie.""
+            },
+            ""userId"": {
+                ""type"": ""string"",
+                ""description"": ""The unique ID of a specific user.""
+            }
+        },
+        ""required"": [ ""userId"" ]
+    }")
+);  
+    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool, getUserPaceTool, searchUserHistoryTool };
 }
 }

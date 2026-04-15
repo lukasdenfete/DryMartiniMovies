@@ -1,4 +1,5 @@
-﻿@page "/stats"
+﻿@using DryMartiniMovies.Core.Enums
+@page "/stats"
 @rendermode InteractiveServer
 @inject MovieApiService MovieApiService
 
@@ -15,15 +16,38 @@
 else if (stats != null)
 {
     <div class="stats-container">
+        <div class="stat-cards-row">
+            <div class="stat-card">
+                <h2>@stats.TotalMovies</h2>
+                <p>sedda filmer</p>
+            </div>
 
-        <div class="stat-card">
-            <h2>@stats.TotalMovies</h2>
-            <p>sedda filmer</p>
-        </div>
+            <div class="stat-card">
+                <h2>@stats.AverageRating.ToString("0.00")</h2>
+                <p>genomsnittsbetyg</p>
+            </div>
 
-        <div class="stat-card">
-            <h2>@stats.AverageRating.ToString("0.00")</h2>
-            <p>genomsnittsbetyg</p>
+            <div class="person-cards-group">
+                @if (topDirector != null)
+                {
+                    <div class="stat-card person-card">
+                        <p class="person-label">#1 regissör</p>
+                        <h2>@topDirector.Name</h2>
+                        <p class="person-score">Score: @topDirector.Score.ToString("0.00")</p>
+                        <p class="person-movies">@string.Join(", ", topDirector.MovieTitles)</p>
+                    </div>
+                }
+
+                @if (topActor != null)
+                {
+                    <div class="stat-card person-card">
+                        <p class="person-label">#1 skådis</p>
+                        <h2>@topActor.Name</h2>
+                        <p class="person-score">Score: @topActor.Score.ToString("0.00")</p>
+                        <p class="person-movies">@string.Join(", ", topActor.MovieTitles)</p>
+                    </div>
+                }
+            </div>
         </div>
 
         <div class="stats-section">
@@ -70,7 +94,7 @@ else if (stats != null)
                 <thead>
                     <tr>
                         <th>Regissör</th>
-                        <th>Antal</th>
+                        <th>Antal filmer</th>
                         <th>Snittbetyg</th>
                     </tr>
                 </thead>
@@ -179,6 +203,56 @@ else if (stats != null)
         padding: 1rem 0;
     }
 
+    .stat-cards-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .stat-cards-row .stat-card {
+        margin: 0;
+    }
+
+    .person-card {
+        align-items: flex-start;
+        text-align: left;
+        max-width: 240px;
+    }
+
+    .person-cards-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-left: auto;
+    }
+
+    .person-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .person-label {
+        font-size: 0.75rem;
+        opacity: 0.55;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .person-score {
+        font-size: 0.9rem;
+        color: #ccc !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .person-movies {
+        font-size: 0.78rem;
+        opacity: 0.55;
+        margin: 0 !important;
+        line-height: 1.4;
+    }
+
     .stats-section {
         margin-top: 2rem;
     }
@@ -186,17 +260,21 @@ else if (stats != null)
 
 @code {
     private StatsDto? stats;
+    private List<PersonScoreDto> personScoreList;
     private string? errorMessage;
     private int directorLimit = 10;
     private string directorSort = "count";
     private int actorLimit = 10;
     private string actorSort = "count";
+    private PersonScoreDto? topDirector => personScoreList?.FirstOrDefault(p => p.Role == PersonRole.Director);
+    private PersonScoreDto? topActor => personScoreList?.FirstOrDefault(p => p.Role == PersonRole.Actor);
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             stats = await MovieApiService.GetStatsAsync();
+            personScoreList = await MovieApiService.GetConnectorsAsync();
         }
         catch (Exception)
         {

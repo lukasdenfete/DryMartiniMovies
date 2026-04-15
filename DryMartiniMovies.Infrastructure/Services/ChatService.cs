@@ -52,8 +52,8 @@ namespace DryMartiniMovies.Infrastructure.Services
                     string toolResult = "";
                     Console.WriteLine(toolCall.FunctionName);
                     switch (toolCall.FunctionName){
-                        case AiTools.GetUserStats:
 
+                        case AiTools.GetUserStats:
                             var stats = await _movieService.GetUserStatsAsync(_userId);
                             toolResult = JsonSerializer.Serialize(stats);
                             messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
@@ -62,12 +62,6 @@ namespace DryMartiniMovies.Infrastructure.Services
                         case AiTools.GetRecentMovies:
                             var recentMovies = await _movieService.GetRecentMoviesAsync(_userId);
                             toolResult = JsonSerializer.Serialize(recentMovies);
-                            messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                            break;
-
-                        case AiTools.GetUserMovies:
-                            var userMovies = await _movieService.GetUserMoviesAsync(_userId);
-                            toolResult = JsonSerializer.Serialize(userMovies);
                             messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                             break;
 
@@ -88,6 +82,22 @@ namespace DryMartiniMovies.Infrastructure.Services
                             var genreName = args.RootElement.TryGetProperty("genreName", out var prop) ? prop.GetString() : null;
                             var genreRecs = await _recommendationService.GetByGenresAsync(_userId, genreName);
                             toolResult = JsonSerializer.Serialize(genreRecs);
+                            messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                            break;
+                        
+                        case AiTools.GetUserPace:
+                            var pace = await _movieService.GetUserPaceAsync(_userId);
+                            toolResult = JsonSerializer.Serialize(pace);
+                            Console.WriteLine(toolResult);
+                            messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                            break;
+                        
+                        case AiTools.SearchUserHistory:
+                            args = JsonDocument.Parse(toolCall.FunctionArguments);
+                            Console.WriteLine(toolCall.FunctionArguments);
+                            var title = args.RootElement.TryGetProperty("title", out prop) ? prop.GetString() : null;
+                            var movieHistory = await _movieService.SearchUserHistoryAsync(title, _userId);
+                            toolResult = JsonSerializer.Serialize(movieHistory);
                             messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                             break;
                     }

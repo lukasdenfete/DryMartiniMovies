@@ -1,37 +1,70 @@
+@inject NavigationManager NavigationManager
+@implements IDisposable
+@rendermode InteractiveServer
+
 <div class="top-row navbar navbar-dark">
     <div class="nav-container">
         <a class="navbar-brand" href="">Dry Martini Movies 🍸</a>
 
-        <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+        <button class="navbar-toggler @(menuOpen ? "open" : "")" @onclick="ToggleMenu" title="Navigation menu"></button>
 
-        <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+        <div class="nav-scrollable @(menuOpen ? "open" : "")" @onclick="CloseMenu">
             <nav class="nav flex-row">
-                <div class="nav-item px-3">
+                <div class="nav-item px-2">
                     <NavLink class="nav-link" href="movies">
                         <span class="bi bi-film" aria-hidden="true"></span> Mina filmer
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
+                <div class="nav-item px-2">
                     <NavLink class="nav-link" href="add">
                         <span class="bi bi-plus-circle-fill" aria-hidden="true"></span> Lägg till film
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
+                <div class="nav-item px-2">
                     <NavLink class="nav-link" href="import">
                         <span class="bi bi-upload" aria-hidden="true"></span> Importera
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
+                <div class="nav-item px-2">
                     <NavLink class="nav-link" href="stats">
                         <span class="bi bi-bar-chart-fill" aria-hidden="true"></span> Statistik
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
+                <div class="nav-item px-2">
                     <NavLink class="nav-link" href="recommendations">
                         <span class="bi bi-stars" aria-hidden="true"></span> Rekommendationer
+                    </NavLink>
+                </div>
+                <div class="nav-item px-2">
+                    <NavLink class="nav-link" href="connections">
+                        <span class="bi bi-diagram-3-fill" aria-hidden="true"></span> Kopplingar
                     </NavLink>
                 </div>
             </nav>
         </div>
     </div>
 </div>
+
+@code {
+    private bool menuOpen = false;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void ToggleMenu() => menuOpen = !menuOpen;
+
+    private void CloseMenu() => menuOpen = false;
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        menuOpen = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

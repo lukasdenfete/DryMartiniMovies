@@ -1,4 +1,5 @@
-﻿using DryMartiniMovies.Core.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -106,6 +107,37 @@ namespace DryMartiniMovies.API.Controllers
             var userId = _config["App:DefaultUserId"] ?? "1";
             var result = await _movieService.RemoveRatingAsync(userId, tmdbId);
             return Ok(result);
+        }
+        [HttpGet("history")]
+        public async Task<IActionResult> GetUserHistory(string title)
+        {
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var result = await _movieService.SearchUserHistoryAsync(title, userId);
+            return Ok(result);
+        }
+        [HttpGet("connectors")]
+        public async Task<IActionResult> FindConnectors()
+        {
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var result = await _movieService.FindConnectorsAsync(userId);
+            return Ok(result);
+        }
+        [HttpGet("path")]
+        public async Task<IActionResult> FindShortestPath(int tmdbId1, int tmdbId2)
+        {
+            try
+            {
+                var result = await _movieService.FindShortestPathAsync(tmdbId1, tmdbId2);
+                return Ok(new MoviePathDto
+                {
+                    Steps = result,
+                    Length = result.Count(),
+                });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

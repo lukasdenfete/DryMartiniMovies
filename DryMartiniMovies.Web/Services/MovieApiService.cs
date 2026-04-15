@@ -52,8 +52,8 @@ namespace DryMartiniMovies.Web.Services
         {
             return await _http.GetFromJsonAsync<MovieDto>($"api/movies/{tmdbId}/details");
         }
-        public async Task<List<PaceDto>> GetUserPaceAsync(){
-            return await _http.GetFromJsonAsync<List<PaceDto>>("api/movies/pace") ?? new List<PaceDto>();
+        public async Task<PaceResultDto> GetUserPaceAsync(){
+            return await _http.GetFromJsonAsync<PaceResultDto>("api/movies/pace") ?? new PaceResultDto();
         }
         public async Task<List<MovieDto>> GetRecentMoviesAsync(){
             return await _http.GetFromJsonAsync<List<MovieDto>>("api/movies/recent") ?? new List<MovieDto>();
@@ -90,5 +90,25 @@ namespace DryMartiniMovies.Web.Services
             if (!response.IsSuccessStatusCode) return false;
             return true;
         }
+        public async Task<List<PersonScoreDto>> GetConnectorsAsync()
+        {
+            return await _http.GetFromJsonAsync<List<PersonScoreDto>>("api/movies/connectors") ?? new List<PersonScoreDto>();
+        }
+        public async Task<MoviePathDto?> FindShortestPathAsync(int tmdbId1, int tmdbId2)
+        {
+            var response = await _http.GetAsync($"api/movies/path?tmdbId1={tmdbId1}&tmdbId2={tmdbId2}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            } else
+            {
+                return await response.Content.ReadFromJsonAsync<MoviePathDto>();
+            }
+        }
+        public async Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title)
+        {
+            return await _http.GetFromJsonAsync<List<UserMovie>>($"api/movies/history?title={title}");
+        }
+
     }
 }

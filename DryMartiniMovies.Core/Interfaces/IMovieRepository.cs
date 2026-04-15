@@ -15,4 +15,7 @@ public interface IMovieRepository
     Task<IEnumerable<(string Name, double AvgRating)>> GetFavoriteGenresAsync(string userId, int minMovies = 5);
     Task<IEnumerable<PaceDto>> GetUserPaceAsync(string userId);
     Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId);
+    Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId);
+    Task<IEnumerable<CommonDenominatorDto?>> FindConnectorsAsync(string userId);
+    Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2);
 }
