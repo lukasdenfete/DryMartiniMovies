@@ -94,5 +94,21 @@ namespace DryMartiniMovies.Web.Services
         {
             return await _http.GetFromJsonAsync<List<PersonScoreDto>>("api/movies/connectors") ?? new List<PersonScoreDto>();
         }
+        public async Task<MoviePathDto?> FindShortestPathAsync(int tmdbId1, int tmdbId2)
+        {
+            var response = await _http.GetAsync($"api/movies/path?tmdbId1={tmdbId1}&tmdbId2={tmdbId2}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            } else
+            {
+                return await response.Content.ReadFromJsonAsync<MoviePathDto>();
+            }
+        }
+        public async Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title)
+        {
+            return await _http.GetFromJsonAsync<List<UserMovie>>($"api/movies/history?title={title}");
+        }
+
     }
 }

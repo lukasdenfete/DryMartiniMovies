@@ -1,8 +1,10 @@
-﻿using DryMartiniMovies.Core.DTOs;
+﻿using System.Net;
+using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Enums;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Infrastructure.Neo4j;
+using Microsoft.Extensions.Logging;
 using Neo4j.Driver;
 
 namespace DryMartiniMovies.Infrastructure.Repositories
@@ -179,10 +181,11 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             return records.Select(r => {
                 var node = r["m"].As<INode>();
                 var movieTitle = node["title"].As<string>();
+                var tmdbId = node["tmdbId"].As<int>();
                 return new UserMovie
             {
                 UserId = userId,
-                Movie = new Movie { Title = movieTitle },
+                Movie = new Movie { Title = movieTitle, TmdbId = tmdbId },
                 Rating = r["rating"].As<float>(),
                 WatchedDate = DateTime.TryParseExact(
                     r["watchedDate"].As<string>(),
@@ -391,11 +394,11 @@ namespace DryMartiniMovies.Infrastructure.Repositories
         {
             await using var session = _context.OpenSession();
             var result = await session.RunAsync(@"
-            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
-            RETURN r.rating AS rating, d.name AS name, ""Director"" AS role, m.title AS movieTitle
-            UNION ALL 
-            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
-            RETURN r.rating AS rating, a.name AS name, ""Actor"" AS role, m.title AS movieTitle",
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
+                RETURN r.rating AS rating, d.name AS name, ""Director"" AS role, m.title AS movieTitle
+                UNION ALL 
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
+                RETURN r.rating AS rating, a.name AS name, ""Actor"" AS role, m.title AS movieTitle",
                 new { userId });
             
             var records = await result.ToListAsync();
@@ -406,6 +409,56 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 Role = new [] { Enum.Parse<PersonRole>(r["role"].As<string>()) },
                 MovieTitle = r["movieTitle"].As<string>()
             });
+        }
+
+        private static PathStepDto MapNode(INode node)
+        {
+            if (node.Labels.Contains("Movie"))
+            {
+                return new PathStepDto
+                {
+                    Name = node["title"].As<string>(),
+                    Type = NodeType.Movie
+                };
+            }
+            else if (node.Labels.Contains("Actor"))
+            {
+                return new PathStepDto
+                {
+                    Name = node["name"].As<string>(),
+                    Type = NodeType.Actor
+                };
+            }
+            else if (node.Labels.Contains("Director")) 
+            {
+                return new PathStepDto
+                {
+                    Name = node["name"].As<string>(),
+                    Type = NodeType.Director
+                };
+            } else
+            {
+                throw new InvalidOperationException($"Unknown node label: {string.Join(", ", node.Labels)}");
+            }
+        }
+
+        public async Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2)
+        {
+            await using var session = _context.OpenSession();
+            var result = await session.RunAsync(@"
+            MATCH path = shortestPath((m1:Movie {tmdbId: $tmdbId1})-[:ACTED_IN|DIRECTED*..10]-(m2:Movie {tmdbId: $tmdbId2}))
+            RETURN path",
+            new { tmdbId1, tmdbId2 });
+
+            if (await result.FetchAsync())
+            {
+                 var ipath = result.Current["path"].As<IPath>();
+                 return ipath.Nodes.Select(MapNode);
+                
+            } else
+            {
+                return Enumerable.Empty<PathStepDto>();
+            }
         }
     }
 }

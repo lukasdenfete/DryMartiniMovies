@@ -85,5 +85,16 @@ namespace DryMartiniMovies.Application.Services
             }).OrderByDescending(x => x.Score).Where(x => x.Score > 4);
             return grouped;
         }
+        public async Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2)
+        {
+            var path = await _movieRepository.FindShortestPathAsync(tmdbId1, tmdbId2);
+            if (!path.Any())
+            {
+                throw new InvalidOperationException("No path found between the two movies.");
+            } else
+            {
+                return path;
+            }
+        }
     }
 }

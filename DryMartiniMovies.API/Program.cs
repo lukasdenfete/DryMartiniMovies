@@ -8,6 +8,7 @@ using Scalar.AspNetCore;
 using OpenAI.Chat;
 using OpenAI;
 using System.ClientModel;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,7 +38,7 @@ builder.Services.AddSingleton<ChatClient>(serviceProvider =>
 // dotnet 10 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer(); //dotnet 9
 builder.Services.AddSwaggerGen(); //dotnet 9
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddSingleton<Neo4jContext>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

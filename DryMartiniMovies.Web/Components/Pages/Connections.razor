@@ -1,0 +1,89 @@
+@page "/connections"
+@inject MovieApiService MovieApiService
+@rendermode InteractiveServer
+
+<h1>Hitta kopplingar mellan filmer</h1>
+
+<div class="input">
+    <input type="text" @oninput="e => SearchHistory(userHistory1, movie1 = e.Value.ToString())" value="@movie1" placeholder="Första filmen" />
+    @if (userHistory1.Any()){
+        <ul>
+        @foreach(var movie in userHistory1){
+            <li @onclick="() => SaveTmdbId(movie, true)">@movie.Movie.Title</li>
+        }
+        </ul>
+    }
+    <input type="text" @oninput="e => SearchHistory(userHistory2, movie2 = e.Value.ToString())" value="@movie2" placeholder="Andra filmen" />
+    @if(userHistory2.Any()){
+        <ul>
+            @foreach(var movie in userHistory2){
+                <li @onclick="() => SaveTmdbId(movie, false)">@movie.Movie.Title</li>
+            }
+        </ul>
+    }
+    <button type="button" @onclick="() => FindPath(tmdbId1, tmdbId2)" disabled="@(tmdbId1 == 0 || tmdbId2 == 0)">Hitta koppling</button>
+</div>
+<div class="result">
+    @if (errorMessage != null){
+        <p>@errorMessage</p>
+    }
+    @if(moviePathDto != null){
+        @for (int i = 0; i < moviePathDto.Steps.Count(); i++)
+        {   
+            <div class="d-flex">
+            <p>@moviePathDto.Steps.ElementAt(i).Name</p> 
+            <p>@moviePathDto.Steps.ElementAt(i).Type</p>
+            @if (i < moviePathDto.Steps.Count() - 1){
+                <p>-></p>
+            }
+            </div>
+        }
+    }
+</div>
+
+
+
+@code {
+    private string movie1;
+    private string movie2;
+    private int tmdbId1;
+    private int tmdbId2;
+    private MoviePathDto moviePathDto;
+    private string errorMessage;
+    private List<UserMovie> userHistory1 = new List<UserMovie>();
+    private List<UserMovie> userHistory2 = new List<UserMovie>();
+
+    private async Task SearchHistory(List<UserMovie> userMovies, string query)
+    {
+        if (string.IsNullOrEmpty(query)) { userMovies.Clear(); return; }
+        var result = await MovieApiService.SearchUserHistoryAsync(query);
+        userMovies.Clear();
+        userMovies.AddRange(result);
+    }
+    private void SaveTmdbId(UserMovie userMovie, bool isMovie1)
+    {
+        Console.WriteLine($"SaveTmdbId called: {userMovie.Movie?.TmdbId}");
+        if(isMovie1){
+            tmdbId1 = userMovie.Movie.TmdbId;
+            movie1 = userMovie.Movie.Title;
+            userHistory1.Clear();
+        }
+        else {
+            tmdbId2 = userMovie.Movie.TmdbId;
+            movie2 = userMovie.Movie.Title;
+            userHistory2.Clear();
+        } 
+    }
+    private async Task FindPath(int one, int two)
+    {
+        Console.WriteLine($"tmdbid1: {tmdbId1}, tmdbid2: {tmdbId2}");   
+        var path = await MovieApiService.FindShortestPathAsync(one, two);
+        if (path == null){
+            errorMessage = "Kunde inte hitta någon koppling mellan dessa filmer.";
+        } 
+        else 
+        {
+            moviePathDto = path;
+        }
+    }
+}
