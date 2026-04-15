@@ -42,7 +42,13 @@
 }
 
 .bi {
-    margin-right: 1rem;
+    margin-right: 0.4rem;
+}
+
+@media (max-width: 900px) {
+    .nav-item .bi {
+        display: none;
+    }
 }
 
 .bi-house-door-fill-nav-menu {
@@ -58,7 +64,7 @@
 }
 
 .nav-item {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
     .nav-item ::deep .nav-link {
