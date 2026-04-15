@@ -31,6 +31,10 @@
       </div>
     </div>
   }
+ @if (!ChatStateService.isOpen)
+ {
+   <div class="chat-tooltip">Fråga mig!</div>
+ }
  <button class="chat-bubble" @onclick="ToggleChat"><i class="bi bi-robot"></i></button>
 </div>
 
@@ -40,6 +44,24 @@
         border: none;
         font-size: 50px;
         color: orangered;
+    }
+
+    .chat-tooltip {
+        background: #1a1a2e;
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #eee;
+        font-size: 0.8rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 12px;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        animation: tooltip-pop 0.2s ease;
+    }
+
+@@keyframes tooltip-pop {
+        from { opacity: 0; transform: translateY(4px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
     
     .chat-widget {
