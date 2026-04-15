@@ -2,43 +2,80 @@
 @inject MovieApiService MovieApiService
 @rendermode InteractiveServer
 
-<h1>Hitta kopplingar mellan filmer</h1>
+<div class="connections-page">
+<h1 class="page-title">Hitta kopplingar mellan filmer</h1>
 
-<div class="input">
-    <input type="text" @oninput="e => SearchHistory(userHistory1, movie1 = e.Value.ToString())" value="@movie1" placeholder="Första filmen" />
-    @if (userHistory1.Any()){
-        <ul>
-        @foreach(var movie in userHistory1){
-            <li @onclick="() => SaveTmdbId(movie, true)">@movie.Movie.Title</li>
-        }
-        </ul>
-    }
-    <input type="text" @oninput="e => SearchHistory(userHistory2, movie2 = e.Value.ToString())" value="@movie2" placeholder="Andra filmen" />
-    @if(userHistory2.Any()){
-        <ul>
-            @foreach(var movie in userHistory2){
-                <li @onclick="() => SaveTmdbId(movie, false)">@movie.Movie.Title</li>
-            }
-        </ul>
-    }
-    <button type="button" @onclick="() => FindPath(tmdbId1, tmdbId2)" disabled="@(tmdbId1 == 0 || tmdbId2 == 0)">Hitta koppling</button>
-</div>
-<div class="result">
-    @if (errorMessage != null){
-        <p>@errorMessage</p>
-    }
-    @if(moviePathDto != null){
-        @for (int i = 0; i < moviePathDto.Steps.Count(); i++)
-        {   
-            <div class="d-flex">
-            <p>@moviePathDto.Steps.ElementAt(i).Name</p> 
-            <p>@moviePathDto.Steps.ElementAt(i).Type</p>
-            @if (i < moviePathDto.Steps.Count() - 1){
-                <p>-></p>
-            }
+<div class="search-card">
+    <div class="row g-3 align-items-end">
+        <div class="col-12 col-sm">
+            <label class="form-label">Första filmen</label>
+            <div class="autocomplete-wrap">
+                <input class="form-control dark-input" type="text" @oninput="e => SearchHistory(userHistory1, movie1 = e.Value.ToString())" value="@movie1" placeholder="t.ex. Pulp Fiction" />
+                @if (userHistory1.Any())
+                {
+                    <ul class="autocomplete-list">
+                        @foreach (var movie in userHistory1)
+                        {
+                            <li class="autocomplete-item" @onclick="() => SaveTmdbId(movie, true)">@movie.Movie.Title</li>
+                        }
+                    </ul>
+                }
             </div>
-        }
-    }
+        </div>
+        <div class="col-12 col-sm">
+            <label class="form-label">Andra filmen</label>
+            <div class="autocomplete-wrap">
+                <input class="form-control dark-input" type="text" @oninput="e => SearchHistory(userHistory2, movie2 = e.Value.ToString())" value="@movie2" placeholder="t.ex. The Godfather" />
+                @if (userHistory2.Any())
+                {
+                    <ul class="autocomplete-list">
+                        @foreach (var movie in userHistory2)
+                        {
+                            <li class="autocomplete-item" @onclick="() => SaveTmdbId(movie, false)">@movie.Movie.Title</li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+        <div class="col-12 col-sm-auto">
+            <button class="btn btn-primary w-100" type="button" @onclick="() => FindPath(tmdbId1, tmdbId2)" disabled="@(tmdbId1 == 0 || tmdbId2 == 0)">Hitta koppling</button>
+        </div>
+    </div>
+</div>
+@if (errorMessage != null)
+{
+    <p class="text-muted mt-2">@errorMessage</p>
+}
+@if (moviePathDto != null)
+{
+    <div class="path-card">
+        <p class="path-length">Koppling hittad på @moviePathDto.Length @(moviePathDto.Length == 1 ? "steg" : "steg")</p>
+        <div class="path-chain">
+            @for (int i = 0; i < moviePathDto.Steps.Count(); i++)
+            {
+                var step = moviePathDto.Steps.ElementAt(i);
+                @if (step.Type == NodeType.Movie)
+                {
+                    <div class="path-node path-node--movie">
+                        <span class="path-node-label">Film</span>
+                        <span class="path-node-name">@step.Name</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="path-node path-node--person">
+                        <span class="path-node-label">@(step.Type == NodeType.Director ? "Regissör" : "Skådespelare")</span>
+                        <span class="path-node-name">@step.Name</span>
+                    </div>
+                }
+                @if (i < moviePathDto.Steps.Count() - 1)
+                {
+                    <div class="path-arrow">→</div>
+                }
+            }
+        </div>
+    </div>
+}
 </div>
 
 
@@ -76,14 +113,13 @@
     }
     private async Task FindPath(int one, int two)
     {
-        Console.WriteLine($"tmdbid1: {tmdbId1}, tmdbid2: {tmdbId2}");   
+        Console.WriteLine($"tmdbid1: {tmdbId1}, tmdbid2: {tmdbId2}");
+        moviePathDto = null;
+        errorMessage = null;
         var path = await MovieApiService.FindShortestPathAsync(one, two);
-        if (path == null){
+        if (path == null)
             errorMessage = "Kunde inte hitta någon koppling mellan dessa filmer.";
-        } 
-        else 
-        {
+        else
             moviePathDto = path;
-        }
     }
 }
