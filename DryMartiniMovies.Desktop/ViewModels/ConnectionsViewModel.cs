@@ -87,6 +87,7 @@ public class ConnectionsViewModel : INotifyPropertyChanged
     private async void FindPath()
     {
         try {
+        ErrorMessage = null;
         var path = await _movieApiService.FindShortestPathAsync(TmdbId1, TmdbId2);
         if (path == null)
             ErrorMessage = "Kunde inte hitta någon koppling mellan dessa filmer.";
