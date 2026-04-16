@@ -3,7 +3,7 @@ using DryMartiniMovies.Core.Models;
 using System.Net.Http;
 using System.Net.Http.Json;
 
-namespace DryMartiniMovies.Web.Services
+namespace DryMartiniMovies.Client.Services
 {
     public class MovieApiService
     {

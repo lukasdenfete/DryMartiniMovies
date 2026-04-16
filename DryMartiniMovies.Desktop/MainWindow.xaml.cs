@@ -16,8 +16,9 @@ namespace DryMartiniMovies.Desktop;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(ConnectionsViewModel viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
     }
 }

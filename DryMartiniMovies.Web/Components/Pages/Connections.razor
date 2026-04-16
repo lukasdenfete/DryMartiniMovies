@@ -1,4 +1,5 @@
 @page "/connections"
+@using DryMartiniMovies.Client.Services;
 @inject MovieApiService MovieApiService
 @rendermode InteractiveServer
 
@@ -99,7 +100,6 @@
     }
     private void SaveTmdbId(UserMovie userMovie, bool isMovie1)
     {
-        Console.WriteLine($"SaveTmdbId called: {userMovie.Movie?.TmdbId}");
         if(isMovie1){
             tmdbId1 = userMovie.Movie.TmdbId;
             movie1 = userMovie.Movie.Title;
@@ -113,7 +113,6 @@
     }
     private async Task FindPath(int one, int two)
     {
-        Console.WriteLine($"tmdbid1: {tmdbId1}, tmdbid2: {tmdbId2}");
         moviePathDto = null;
         errorMessage = null;
         var path = await MovieApiService.FindShortestPathAsync(one, two);

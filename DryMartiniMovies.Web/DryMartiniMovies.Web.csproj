@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DryMartiniMovies.Core\DryMartiniMovies.Core.csproj" />
+    <ProjectReference Include="..\DryMartiniMovies.Client\DryMartiniMovies.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
 using DryMartiniMovies.Web.Components;
+using DryMartiniMovies.Client.Services;
 using DryMartiniMovies.Web.Services;
 using ApexCharts;
 

@@ -5,8 +5,70 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DryMartiniMovies.Desktop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Dry Martini Movies" Height="600" Width="1000">
+        <Window.Resources>
+         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+      </Window.Resources>
     <Grid>
-
+        <StackPanel Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- Inputs and button row -->
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Margin="0,0,10,0">
+                    <TextBox Width="200" Padding="0,0,30,0" Height="30" FontSize="16" Text="{Binding Movie1, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ItemsControl ItemsSource="{Binding UserHistory1}" Visibility="{Binding ShowHistory1, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Movie.Title}" Command="{Binding DataContext.SaveTmdbId1Command, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+                <StackPanel Margin="0,0,10,0">
+                    <TextBox Width="200" Padding="0,0,30,0" Height="30" FontSize="16" Text="{Binding Movie2, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ItemsControl ItemsSource="{Binding UserHistory2}" Visibility="{Binding ShowHistory2, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Movie.Title}" Command="{Binding DataContext.SaveTmdbId2Command, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+                <Button Content="Hitta koppling" Command="{Binding FindPathCommand}" VerticalAlignment="Top" Height="30"/>
+            </StackPanel>
+            <!-- Result area below -->
+            <TextBlock Text="{Binding ErrorMessage}" Margin="0,10,0,0"/>
+            <ItemsControl ItemsSource="{Binding MoviePathDto.Steps}" Margin="0,10,0,0" AlternationCount="1000"> <!--Count="1000" = WPF tilldelar varje item ett index. DataTrigger kollar om index är 0 och döljer då pilen-->  
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="→ " VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                        <Binding Path="Name" />
+                                        <Binding Path="Type" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </StackPanel>
     </Grid>
 </Window>
