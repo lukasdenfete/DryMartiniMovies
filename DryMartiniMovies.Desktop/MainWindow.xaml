@@ -42,7 +42,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
-            <Button Content="Hitta koppling" Command="{Binding FindPathCommand}" VerticalAlignment="Top" Height="30"/>
+            <ui:Button Content="Hitta koppling" Command="{Binding FindPathCommand}" VerticalAlignment="Top" Height="30" CornerRadius="1"/>
         </StackPanel>
         <!-- Result area -->
         <StackPanel Grid.Row="3" HorizontalAlignment="Center" Margin="10,0,10,10">
@@ -51,9 +51,9 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="→ " VerticalAlignment="Center">
+                            <TextBlock Text=" → " VerticalAlignment="Center">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="0">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
