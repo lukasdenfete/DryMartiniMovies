@@ -22,28 +22,44 @@
         <TextBlock Grid.Row="1" Text="Hitta kopplingar mellan filmer 🍸" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,0,10,16"/>
         <!-- Inputs and button row -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,10,0">
-            <StackPanel Margin="0,0,10,0">
-                <TextBox Width="200" Padding="0,0,30,0" Height="30" FontSize="16" Text="{Binding Movie1, UpdateSourceTrigger=PropertyChanged}"/>
-                <ItemsControl ItemsSource="{Binding UserHistory1}" Visibility="{Binding ShowHistory1, Converter={StaticResource BoolToVis}}">
+            
+            <Grid Margin="0,0,10,0">
+                <TextBox x:Name="TextBox1" Width="200" Padding="0,0,30,0" Height="30" FontSize="16" Text="{Binding Movie1, UpdateSourceTrigger=PropertyChanged}"/>
+                <Popup IsOpen="{Binding ShowHistory1}" PlacementTarget="{Binding ElementName=TextBox1}" Placement="Bottom">
+                    <Border MaxHeight="300" Background="#2a2a3e" >
+                    <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding UserHistory1}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Content="{Binding Movie.Title}" Command="{Binding DataContext.SaveTmdbId1Command, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" CommandParameter="{Binding}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </StackPanel>
-            <StackPanel Margin="0,0,10,0">
-                <TextBox Width="200" Padding="0,0,30,0" Height="30" FontSize="16" Text="{Binding Movie2, UpdateSourceTrigger=PropertyChanged}"/>
-                <ItemsControl ItemsSource="{Binding UserHistory2}" Visibility="{Binding ShowHistory2, Converter={StaticResource BoolToVis}}">
+                    </ScrollViewer>
+                    </Border>
+                </Popup>
+            </Grid>
+
+            <Grid Margin="0,0,10,0">
+                <TextBox x:Name="TextBox2" Width="200" Padding="0,0,30,0" Height="30" FontSize="16" Text="{Binding Movie2, UpdateSourceTrigger=PropertyChanged}"/>
+                <Popup IsOpen="{Binding ShowHistory2}" PlacementTarget="{Binding ElementName=TextBox2}" Placement="Bottom">
+                    <Border MaxHeight="300" Background="#2a2a3e" >
+                    <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding UserHistory2}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Content="{Binding Movie.Title}" Command="{Binding DataContext.SaveTmdbId2Command, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" CommandParameter="{Binding}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </StackPanel>
+                </ScrollViewer>
+                    </Border>
+                </Popup>
+            </Grid>
+
             <ui:Button Content="Hitta koppling" Command="{Binding FindPathCommand}" VerticalAlignment="Top" Height="30" CornerRadius="1"/>
         </StackPanel>
+
         <!-- Result area -->
         <StackPanel Grid.Row="3" HorizontalAlignment="Center" Margin="10,0,10,10">
             <TextBlock Text="{Binding ErrorMessage}" Margin="0,10,0,0"/>

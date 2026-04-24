@@ -74,6 +74,7 @@ public class ConnectionsViewModel : INotifyPropertyChanged
         Movie1 = userMovie.Movie.Title;
         _isSelecting = false;
         UserHistory1.Clear();
+        ShowHistory1 = false;
     }
     private void SaveTmdbId2(object parameter)
     {
@@ -83,6 +84,7 @@ public class ConnectionsViewModel : INotifyPropertyChanged
         Movie2 = userMovie.Movie.Title;
         _isSelecting = false;
         UserHistory2.Clear();
+        ShowHistory2 = false;
     }
     private async void FindPath()
     {

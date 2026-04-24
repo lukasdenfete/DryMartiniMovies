@@ -13,8 +13,14 @@
                     <Setter Property="Foreground" Value="#ccc"/>
                 </Style>
                 <Style TargetType="Button">
-                    <Setter Property="Foreground" Value="#1b6ec2"/>
-                    <Setter Property="Background" Value="#1b6ec2"/>
+                    <Setter Property="Foreground" Value="#e8e8e8"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#3d3d56"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
         </ResourceDictionary>
     </Application.Resources>
