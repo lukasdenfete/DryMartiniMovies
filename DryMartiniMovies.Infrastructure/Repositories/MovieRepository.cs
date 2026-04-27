@@ -460,5 +460,26 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 return Enumerable.Empty<PathStepDto>();
             }
         }
+        public async Task<IEnumerable<GraphSearchDto>> SearchGraphAsync(string title, string userId)
+        {
+            await using var session = _context.OpenSession();
+            var result = session.RunAsync(@"
+            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
+                WHERE toLower(m.title) CONTAINS toLower($title)
+                RETURN m,
+                    r.rating AS rating,
+                    r.watchedDate AS watchedDate
+                LIMIT 20
+            ",
+            new { title, userId });
+
+            var records = result.ToListAsync();
+            return new GraphSearchDto
+            {
+                Label = ,
+                TmdbId = ,
+                Name = ,
+            };
+        }
     }
 }
