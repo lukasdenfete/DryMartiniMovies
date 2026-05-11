@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
+using DryMartiniMovies.Core.Enums;
 
 
 namespace DryMartiniMovies.Application.Services
@@ -85,16 +86,20 @@ namespace DryMartiniMovies.Application.Services
             }).OrderByDescending(x => x.Score).Where(x => x.Score > 4);
             return grouped;
         }
-        public async Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2)
+        public async Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2)
         {
-            var path = await _movieRepository.FindShortestPathAsync(tmdbId1, tmdbId2);
+            var path = await _movieRepository.FindShortestPathAsync(tmdbId1, tmdbId2, label1, label2);
             if (!path.Any())
             {
-                throw new InvalidOperationException("No path found between the two movies.");
+                throw new InvalidOperationException("No path found between the two nodes.");
             } else
             {
                 return path;
             }
+        }
+        public async Task<IEnumerable<GraphSearchDto>> SearchGraphAsync(string title, string userId)
+        {
+            return await _movieRepository.SearchGraphAsync(title, userId);
         }
     }
 }

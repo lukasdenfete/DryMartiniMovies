@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
+using DryMartiniMovies.Core.Enums;
 using DryMartiniMovies.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -123,11 +124,11 @@ namespace DryMartiniMovies.API.Controllers
             return Ok(result);
         }
         [HttpGet("path")]
-        public async Task<IActionResult> FindShortestPath(int tmdbId1, int tmdbId2)
+        public async Task<IActionResult> FindShortestPath(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2)
         {
             try
             {
-                var result = await _movieService.FindShortestPathAsync(tmdbId1, tmdbId2);
+                var result = await _movieService.FindShortestPathAsync(tmdbId1, tmdbId2, label1, label2);
                 return Ok(new MoviePathDto
                 {
                     Steps = result,
@@ -138,6 +139,13 @@ namespace DryMartiniMovies.API.Controllers
             {
                 return NotFound(ex.Message);
             }
+        }
+        [HttpGet("graphsearch")]
+        public async Task<IActionResult> SearchGraphAsync(string title)
+        {
+            var userId = _config["App:DefaultUserId"] ?? "1";
+            var result = await _movieService.SearchGraphAsync(title, userId);
+            return Ok(result);
         }
     }
 }

@@ -442,13 +442,15 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2)
+        public async Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2)
         {
             await using var session = _context.OpenSession();
             var result = await session.RunAsync(@"
-            MATCH path = shortestPath((m1:Movie {tmdbId: $tmdbId1})-[:ACTED_IN|DIRECTED*..10]-(m2:Movie {tmdbId: $tmdbId2}))
-            RETURN path",
-            new { tmdbId1, tmdbId2 });
+            MATCH (n1 {tmdbId: $tmdbId1}), (n2 {tmdbId: $tmdbId2})
+                WHERE $label1 IN labels(n1) AND $label2 IN labels(n2)
+            MATCH path = shortestPath((n1)-[:ACTED_IN|DIRECTED*..10]-(n2))
+                RETURN path",
+            new { tmdbId1, tmdbId2, label1 = label1.ToString(), label2 = label2.ToString() });
 
             if (await result.FetchAsync())
             {
@@ -463,23 +465,30 @@ namespace DryMartiniMovies.Infrastructure.Repositories
         public async Task<IEnumerable<GraphSearchDto>> SearchGraphAsync(string title, string userId)
         {
             await using var session = _context.OpenSession();
-            var result = session.RunAsync(@"
+            var result = await session.RunAsync(@"
             MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
                 WHERE toLower(m.title) CONTAINS toLower($title)
-                RETURN m,
-                    r.rating AS rating,
-                    r.watchedDate AS watchedDate
+                RETURN DISTINCT m.tmdbId AS tmdbId, m.title AS name, 'Movie' AS label
                 LIMIT 20
-            ",
+            UNION
+            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
+                WHERE toLower(a.name) CONTAINS toLower($title)
+                RETURN DISTINCT a.tmdbId AS tmdbId, a.name AS name, 'Actor' AS label
+                LIMIT 20
+            UNION
+            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
+                WHERE toLower(d.name) CONTAINS toLower($title)
+                RETURN DISTINCT d.tmdbId AS tmdbId, d.name AS name, 'Director' AS label
+                LIMIT 20",
             new { title, userId });
 
-            var records = result.ToListAsync();
-            return new GraphSearchDto
+            var records = await result.ToListAsync();
+            return records.Select(r =>  new GraphSearchDto
             {
-                Label = ,
-                TmdbId = ,
-                Name = ,
-            };
+                Label = Enum.Parse<NodeType>(r["label"].As<string>()),
+                TmdbId = r["tmdbId"].As<int>(),
+                Name = r["name"].As<string>()
+            });
         }
     }
 }

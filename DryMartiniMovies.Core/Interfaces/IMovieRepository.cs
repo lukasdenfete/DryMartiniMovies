@@ -1,5 +1,6 @@
 using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Models;
+using DryMartiniMovies.Core.Enums;
 
 namespace DryMartiniMovies.Core.Interfaces;
 
@@ -17,6 +18,6 @@ public interface IMovieRepository
     Task<IEnumerable<MovieDto>> GetRecentMoviesAsync(string userId);
     Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId);
     Task<IEnumerable<CommonDenominatorDto?>> FindConnectorsAsync(string userId);
-    Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2);
+    Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2);
     Task<IEnumerable<GraphSearchDto>> SearchGraphAsync(string title, string userId);
 }

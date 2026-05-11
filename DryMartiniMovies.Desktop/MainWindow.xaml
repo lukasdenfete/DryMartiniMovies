@@ -19,7 +19,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <ui:TitleBar Grid.Row="0"/>
-        <TextBlock Grid.Row="1" Text="Hitta kopplingar mellan filmer 🍸" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,0,10,16"/>
+        <TextBlock Grid.Row="1" Text="Hitta kopplingar mellan filmer och personer 🍸" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10,0,10,16"/>
         <!-- Inputs and button row -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,10,0">   
             <Grid Margin="0,0,10,0">
@@ -30,7 +30,7 @@
                 <ItemsControl ItemsSource="{Binding UserHistory1}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Movie.Title}" Command="{Binding DataContext.SaveTmdbId1Command, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" CommandParameter="{Binding}" />
+                            <Button Content="{Binding Name}" Command="{Binding DataContext.SaveTmdbId1Command, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" CommandParameter="{Binding}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -46,7 +46,7 @@
                 <ItemsControl ItemsSource="{Binding UserHistory2}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Movie.Title}" Command="{Binding DataContext.SaveTmdbId2Command, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" CommandParameter="{Binding}"/>
+                            <Button Content="{Binding Name}" Command="{Binding DataContext.SaveTmdbId2Command, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}" CommandParameter="{Binding}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

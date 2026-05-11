@@ -1,5 +1,7 @@
 ﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Models;
+using DryMartiniMovies.Core.Enums;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Json;
 
@@ -94,9 +96,9 @@ namespace DryMartiniMovies.Client.Services
         {
             return await _http.GetFromJsonAsync<List<PersonScoreDto>>("api/movies/connectors") ?? new List<PersonScoreDto>();
         }
-        public async Task<MoviePathDto?> FindShortestPathAsync(int tmdbId1, int tmdbId2)
+        public async Task<MoviePathDto?> FindShortestPathAsync(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2)
         {
-            var response = await _http.GetAsync($"api/movies/path?tmdbId1={tmdbId1}&tmdbId2={tmdbId2}");
+            var response = await _http.GetAsync($"api/movies/path?tmdbId1={tmdbId1}&tmdbId2={tmdbId2}&label1={label1}&label2={label2}");
             if (!response.IsSuccessStatusCode)
             {
                 return null;
@@ -109,6 +111,9 @@ namespace DryMartiniMovies.Client.Services
         {
             return await _http.GetFromJsonAsync<List<UserMovie>>($"api/movies/history?title={title}");
         }
-
+        public async Task<IEnumerable<GraphSearchDto>> SearchGraphAsync(string title)
+        {
+            return await _http.GetFromJsonAsync<List<GraphSearchDto>>($"api/movies/graphsearch?title={title}");
+        }
     }
 }
