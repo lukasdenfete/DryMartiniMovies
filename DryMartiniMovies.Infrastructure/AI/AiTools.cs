@@ -10,6 +10,8 @@ public const string GetRecommendationsByActors = "get_recommendations_by_actors"
 public const string GetRecommendationsByGenre = "get_recommendations_by_genre";
 public const string GetUserPace = "get_user_pace";
 public const string SearchUserHistory = "search_user_history";
+public const string SearchGraph = "search_graph";
+public const string FindShortestPath = "find_shortest_path";
 
 public static List<ChatTool> GetTools(){
 
@@ -126,6 +128,56 @@ ChatTool searchUserHistoryTool = ChatTool.CreateFunctionTool(
         ""required"": [ ""userId"" ]
     }")
 );  
-    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool, getUserPaceTool, searchUserHistoryTool };
+ChatTool searchGraphTool = ChatTool.CreateFunctionTool(
+    functionName: SearchGraph,
+    functionDescription: "Search the graph database for a movie, director or actor by name. Returns matching nodes with their TmdbId and type (Movie, Director or Actor). Use this to resolve a name to an id before calling find_shortest_path.",
+    functionParameters: BinaryData.FromString(@"
+    {
+        ""type"": ""object"",
+        ""properties"": {
+            ""title"": {
+                ""type"": ""string"",
+                ""description"": ""The name of the movie, director or actor to search for.""
+            },
+            ""userId"": {
+                ""type"": ""string"",
+                ""description"": ""The unique ID of a specific user.""
+            }
+        },
+        ""required"": [ ""title"", ""userId"" ]
+    }")
+);
+
+ChatTool findShortestPathTool = ChatTool.CreateFunctionTool(
+    functionName: FindShortestPath,
+    functionDescription: "Find the shortest connection path between two nodes (movies, directors or actors) in the graph. Returns each step in the path with its name and type. Use search_graph first to get the TmdbId and label for each node.",
+    functionParameters: BinaryData.FromString(@"
+    {
+        ""type"": ""object"",
+        ""properties"": {
+            ""tmdbId1"": {
+                ""type"": ""integer"",
+                ""description"": ""The TMDB id of the first node.""
+            },
+            ""tmdbId2"": {
+                ""type"": ""integer"",
+                ""description"": ""The TMDB id of the second node.""
+            },
+            ""label1"": {
+                ""type"": ""string"",
+                ""enum"": [""Movie"", ""Director"", ""Actor""],
+                ""description"": ""The node type of the first node.""
+            },
+            ""label2"": {
+                ""type"": ""string"",
+                ""enum"": [""Movie"", ""Director"", ""Actor""],
+                ""description"": ""The node type of the second node.""
+            }
+        },
+        ""required"": [ ""tmdbId1"", ""tmdbId2"", ""label1"", ""label2"" ]
+    }")
+);
+
+    return new List<ChatTool> { getUserStatsTool, getRecentMoviesTool, getRecommendationsByDirectorsTool, getRecommendationsByActorsTool, getRecommendationsByGenreTool, getUserPaceTool, searchUserHistoryTool, searchGraphTool, findShortestPathTool };
 }
 }

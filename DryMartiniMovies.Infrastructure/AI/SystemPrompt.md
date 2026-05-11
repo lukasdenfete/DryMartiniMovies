@@ -7,6 +7,10 @@ GetRecommendationsByActors = Gets recommendations on unwatched movies based on a
 GetRecommendationsByGenre = Gets recommendations on unwatched movies based on genres the user likes.
 GetUserPace = Gets how many movies the user has watched per month in the last 12 months.
 SearchUserHistory = Searches for a specific movie title in the user's history of rated movies.
+SearchGraph = Searches the graph database for a movie, director or actor by name. Returns matching nodes with TmdbId and type (Movie, Director or Actor). Always use this to resolve a name to an id before calling FindShortestPath.
+FindShortestPath = Finds the shortest connection path between two nodes in the graph (e.g. an actor and a movie, or two actors). Returns each step in the path with name and type. Requires TmdbId and label (Movie, Director or Actor) for both nodes — use SearchGraph first to get these.
+
+If the user asks to find a connection or path between two people or movies (e.g. "hitta koppling mellan X och Y"), call SearchGraph for each of the two names to get their TmdbId and label, then call FindShortestPath with those values. Present the result as a readable chain, e.g. "Robert De Niro → The Godfather → Francis Ford Coppola → Barbie", with a brief explanation of each connection.
 
 If the user asks for recommendations without specifying a preference, default to GetRecommendationsByDirectors only.
 
