@@ -1,41 +1,40 @@
-﻿using System.Configuration;
-using System.Data;
 using System.Windows;
 using DryMartiniMovies.Client.Services;
+using DryMartiniMovies.Desktop.Pages;
+using DryMartiniMovies.Desktop.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Wpf.Ui;
+using Wpf.Ui.Abstractions;
 
 namespace DryMartiniMovies.Desktop;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
     private IServiceProvider _serviceProvider;
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        try {
-        base.OnStartup(e);
-        var serviceCollection = new ServiceCollection();
-        ConfigureServices(serviceCollection);
-  
-        _serviceProvider = serviceCollection.BuildServiceProvider();
+        try
+        {
+            base.OnStartup(e);
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
 
-        var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-        mainWindow.Show();
+            _serviceProvider = serviceCollection.BuildServiceProvider();
+
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            mainWindow.Show();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             MessageBox.Show(ex.Message);
         }
     }
-        private void ConfigureServices(IServiceCollection services)
+
+    private void ConfigureServices(IServiceCollection services)
     {
-        // Configure Logging
         services.AddLogging();
 
-        // Configure HttpClient
         var apiBaseAddress = "http://localhost:5185/";
         services.AddHttpClient<MovieApiService>(client =>
         {
@@ -43,14 +42,19 @@ public partial class App : Application
             client.Timeout = TimeSpan.FromMinutes(10);
         });
 
-        // Register Services
-       // services.AddSingleton<IUserService, UserService>();
+        // WPF-UI navigation
+        services.AddSingleton<INavigationViewPageProvider, ServiceNavigationViewPageProvider>();
+        services.AddSingleton<INavigationService, NavigationService>();
 
-        // Register ViewModels
+        // ViewModels
         services.AddTransient<ConnectionsViewModel>();
+        services.AddTransient<ImportViewModel>();
 
-        // Register Views
+        // Pages
+        services.AddTransient<ConnectionsPage>();
+        services.AddTransient<ImportPage>();
+
+        // Main window
         services.AddSingleton<MainWindow>();
     }
 }
-

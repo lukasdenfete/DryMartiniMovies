@@ -15,6 +15,7 @@
         @if (selectedFile != null)
         {
             <p>Vald fil: <strong>@selectedFile.Name</strong></p>
+            <p class="text-muted">@totalRows filmer hittades</p>
             <button class="btn btn-primary mt-2" @onclick="ImportFile">Importera</button>
         }
     }
@@ -23,7 +24,7 @@
     {
         <div class="d-flex align-items-center gap-3 mt-3">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mb-0">Importerar filmer... (@seconds sekunder)</p>
+            <p class="mb-0">Importerar @totalRows filmer... (@seconds sekunder)</p>
         </div>
     }
 
@@ -55,12 +56,23 @@
     private ImportResultDto? result;
     private bool isImporting = false;
     private int seconds = 0;
+    private int totalRows = 0;
     private Timer? timer;
     private string? errorMessage;
 
-    private void HandleFileSelected(InputFileChangeEventArgs e)
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
+        totalRows = await CountRowsAsync(selectedFile);
+    }
+
+    private async Task<int> CountRowsAsync(IBrowserFile file)
+    {
+        using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+        using var reader = new StreamReader(stream);
+        int count = -1; // subtract header
+        while (await reader.ReadLineAsync() != null) count++;
+        return Math.Max(count, 0);
     }
 
     private async Task ImportFile()

@@ -8,6 +8,8 @@ using DryMartiniMovies.Client.Services;
 using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Enums;
 using DryMartiniMovies.Core.Models;
+namespace DryMartiniMovies.Desktop.ViewModels;
+
 public class ConnectionsViewModel : INotifyPropertyChanged
 {
     private string _movie1;
@@ -21,7 +23,8 @@ public class ConnectionsViewModel : INotifyPropertyChanged
     private MoviePathDto _moviePathDto;
     public MoviePathDto MoviePathDto { get => _moviePathDto; set { _moviePathDto = value; OnPropertyChanged(); } }
     private string _errorMessage;
-    public string ErrorMessage { get => _errorMessage; set { _errorMessage = value; OnPropertyChanged(); } }
+    public string ErrorMessage { get => _errorMessage; set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasErrorMessage)); } }
+    public bool HasErrorMessage => !string.IsNullOrEmpty(_errorMessage);
     private ObservableCollection<GraphSearchDto> _userHistory1 = new ObservableCollection<GraphSearchDto>();
     public ObservableCollection<GraphSearchDto> UserHistory1 { get => _userHistory1; set { _userHistory1 = value; OnPropertyChanged(); } }
     private ObservableCollection<GraphSearchDto> _userHistory2 = new ObservableCollection<GraphSearchDto>();

@@ -1,0 +1,81 @@
+<Page x:Class="DryMartiniMovies.Desktop.Pages.ImportPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        mc:Ignorable="d"
+        Title="Import">
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Page.Resources>
+    <Grid Background="#0d0d1a">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Importera filmer 🍸" FontSize="28" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="10,20,10,16"/>
+
+        <!-- Initial state: pick file and import -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Visibility="{Binding ShowInitial, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Ladda upp din Letterboxd ratings.csv för att importera filmer."
+                       HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <ui:Button Content="Välj fil..." Command="{Binding SelectFileCommand}"
+                       HorizontalAlignment="Center" Margin="0,0,0,12"/>
+            <StackPanel Visibility="{Binding HasFile, Converter={StaticResource BoolToVis}}" Margin="0,0,0,12">
+                <TextBlock Text="{Binding SelectedFileName, StringFormat='Vald fil: {0}'}" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalRows, StringFormat='{}{0} filmer hittades'}" HorizontalAlignment="Center" Foreground="Gray"/>
+            </StackPanel>
+            <ui:Button Content="Importera" Command="{Binding ImportCommand}"
+                       Appearance="Primary" HorizontalAlignment="Center"
+                       Visibility="{Binding HasFile, Converter={StaticResource BoolToVis}}"/>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="OrangeRed"
+                       HorizontalAlignment="Center" Margin="0,12,0,0"
+                       Visibility="{Binding HasErrorMessage, Converter={StaticResource BoolToVis}}"/>
+        </StackPanel>
+
+        <!-- Importing spinner -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Visibility="{Binding IsImporting, Converter={StaticResource BoolToVis}}">
+            <ui:ProgressRing IsIndeterminate="True" Width="48" Height="48" HorizontalAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" Margin="0,16,0,0" FontSize="16">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="Importerar {1} filmer... ({0} sekunder)">
+                        <Binding Path="Seconds"/>
+                        <Binding Path="TotalRows"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Result -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Visibility="{Binding ShowResult, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Import klar! ✅" FontSize="20" FontWeight="Bold"
+                       HorizontalAlignment="Center" Margin="0,0,0,12"/>
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,4">
+                <Run Text="Importerade: "/>
+                <Run Text="{Binding Result.ImportedCount}" FontWeight="Bold"/>
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,12">
+                <Run Text="Misslyckades: "/>
+                <Run Text="{Binding Result.FailedCount}" FontWeight="Bold"/>
+            </TextBlock>
+            <Expander Header="Visa fel" HorizontalAlignment="Center" Margin="0,0,0,12"
+                      Visibility="{Binding HasErrors, Converter={StaticResource BoolToVis}}">
+                <ItemsControl ItemsSource="{Binding Result.Errors}" Margin="8,4,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Foreground="OrangeRed"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Expander>
+            <ui:Button Content="Importera igen" Command="{Binding ResetCommand}"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Page>

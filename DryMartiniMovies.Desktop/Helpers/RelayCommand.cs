@@ -5,7 +5,11 @@ using System.Windows.Input;
 
 public class RelayCommand : ICommand
 {
-    public event EventHandler? CanExecuteChanged;
+    public event EventHandler? CanExecuteChanged
+{
+    add => CommandManager.RequerySuggested += value;
+    remove => CommandManager.RequerySuggested -= value;
+}
     private Action _execute;
     private Action<object> _handler;
     private Func<bool> _canExecute;
