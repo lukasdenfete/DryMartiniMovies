@@ -129,6 +129,10 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </ScrollViewer>
+            <TextBlock Text="{Binding MoviePathDto.Length, StringFormat='Koppling hittad på {0} steg'}"
+                    HorizontalAlignment="Center"
+                    Margin="0,8,0,0"
+                    Visibility="{Binding HasPath, Converter={StaticResource BoolToVis}}"/>
             </StackPanel>
         </StackPanel>
     </Grid>

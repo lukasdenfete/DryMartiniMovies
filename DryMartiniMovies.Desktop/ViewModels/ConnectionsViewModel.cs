@@ -21,7 +21,7 @@ public class ConnectionsViewModel : INotifyPropertyChanged
     private int _tmdbId2;
     public int TmdbId2 { get => _tmdbId2; set { _tmdbId2 = value; OnPropertyChanged(); } }
     private MoviePathDto _moviePathDto;
-    public MoviePathDto MoviePathDto { get => _moviePathDto; set { _moviePathDto = value; OnPropertyChanged(); } }
+    public MoviePathDto MoviePathDto { get => _moviePathDto; set { _moviePathDto = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasPath)); } }
     private string _errorMessage;
     public string ErrorMessage { get => _errorMessage; set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasErrorMessage)); } }
     public bool HasErrorMessage => !string.IsNullOrEmpty(_errorMessage);
@@ -41,6 +41,7 @@ public class ConnectionsViewModel : INotifyPropertyChanged
     public ICommand SaveTmdbId2Command { get; set; }
     public NodeType Label1;
     public NodeType Label2;
+    public bool HasPath => MoviePathDto != null;
 
     protected void OnPropertyChanged([CallerMemberName] string name = null)
     {
