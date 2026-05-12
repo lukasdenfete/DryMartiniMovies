@@ -85,7 +85,7 @@
 
                 <ui:Button Content="Hitta koppling"
                            Command="{Binding FindPathCommand}"
-                           Height="36" Padding="16,0"/>
+                           Height="36" Padding="16,0" Cursor="Hand"/>
             </StackPanel>
 
             <!-- Resultat direkt under sökfälten -->
