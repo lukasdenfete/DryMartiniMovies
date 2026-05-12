@@ -1,3 +1,4 @@
+using DryMartiniMovies.Core.Enums;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
 using Microsoft.Extensions.Configuration;
@@ -98,6 +99,25 @@ namespace DryMartiniMovies.Infrastructure.Services
                             var title = args.RootElement.TryGetProperty("title", out prop) ? prop.GetString() : null;
                             var movieHistory = await _movieService.SearchUserHistoryAsync(title, _userId);
                             toolResult = JsonSerializer.Serialize(movieHistory);
+                            messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                            break;
+
+                        case AiTools.SearchGraph:
+                            args = JsonDocument.Parse(toolCall.FunctionArguments);
+                            var searchTitle = args.RootElement.TryGetProperty("title", out prop) ? prop.GetString() : "";
+                            var graphResults = await _movieService.SearchGraphAsync(searchTitle, _userId);
+                            toolResult = JsonSerializer.Serialize(graphResults);
+                            messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                            break;
+
+                        case AiTools.FindShortestPath:
+                            args = JsonDocument.Parse(toolCall.FunctionArguments);
+                            var tmdbId1 = args.RootElement.GetProperty("tmdbId1").GetInt32();
+                            var tmdbId2 = args.RootElement.GetProperty("tmdbId2").GetInt32();
+                            var label1 = Enum.Parse<NodeType>(args.RootElement.GetProperty("label1").GetString()!);
+                            var label2 = Enum.Parse<NodeType>(args.RootElement.GetProperty("label2").GetString()!);
+                            var path = await _movieService.FindShortestPathAsync(tmdbId1, tmdbId2, label1, label2);
+                            toolResult = JsonSerializer.Serialize(path);
                             messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                             break;
                     }
