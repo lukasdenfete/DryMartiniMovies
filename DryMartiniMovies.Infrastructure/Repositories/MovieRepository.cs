@@ -483,7 +483,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             new { title, userId });
 
             var records = await result.ToListAsync();
-            return records.Select(r =>  new GraphSearchDto
+            return records.Where(r => r["tmdbId"] is not null)
+            .Select(r =>  new GraphSearchDto
             {
                 Label = Enum.Parse<NodeType>(r["label"].As<string>()),
                 TmdbId = r["tmdbId"].As<int>(),
