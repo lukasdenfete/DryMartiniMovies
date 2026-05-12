@@ -41,6 +41,11 @@ public partial class App : Application
             client.BaseAddress = new Uri(apiBaseAddress);
             client.Timeout = TimeSpan.FromMinutes(10);
         });
+        services.AddHttpClient<ChatApiService>(client =>
+        {
+            client.BaseAddress = new Uri(apiBaseAddress);
+            client.Timeout = TimeSpan.FromMinutes(10);
+        });
 
         // WPF-UI navigation
         services.AddSingleton<INavigationViewPageProvider, ServiceNavigationViewPageProvider>();
@@ -49,6 +54,7 @@ public partial class App : Application
         // ViewModels
         services.AddTransient<ConnectionsViewModel>();
         services.AddTransient<ImportViewModel>();
+        services.AddSingleton<ChatViewModel>();
 
         // Pages
         services.AddTransient<ConnectionsPage>();

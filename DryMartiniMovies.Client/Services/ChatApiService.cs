@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace DryMartiniMovies.Web.Services
+namespace DryMartiniMovies.Client.Services
 {
     public class ChatApiService
     {
