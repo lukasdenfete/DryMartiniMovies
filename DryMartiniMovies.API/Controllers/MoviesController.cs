@@ -45,8 +45,8 @@ namespace DryMartiniMovies.API.Controllers
                 PosterPath = movie.PosterPath,
                 TmdbRating = movie.TmdbRating,
                 Genres = movie.Genres.Select(g => g.Name).ToList(),
-                Directors = movie.Directors.Select(d => d.Name).ToList(),
-                Actors = movie.Actors.Select(a => a.Name).ToList(),
+                Directors = movie.Persons.Where(d => d.Role.Equals(PersonRole.Director)).Select(d => d.Name).ToList(),
+                Actors = movie.Persons.Where(a => a.Role.Equals(PersonRole.Actor)).Select(a => a.Name).ToList(),
             });
         }
         [HttpGet("{tmdbId:int}")]
@@ -73,8 +73,8 @@ namespace DryMartiniMovies.API.Controllers
                 PosterPath = movie.PosterPath,
                 TmdbRating = movie.TmdbRating,
                 Genres = movie.Genres.Select(g => g.Name).ToList(),
-                Directors = movie.Directors.Select(d => d.Name).ToList(),
-                Actors = movie.Actors.Select(a => a.Name).ToList(),
+                Directors = movie.Persons.Where(d => d.Role.Equals(PersonRole.Director)).Select(d => d.Name).ToList(),
+                Actors = movie.Persons.Where(a => a.Role.Equals(PersonRole.Actor)).Select(a => a.Name).ToList(),
             });
         }
         [HttpGet("pace")]

@@ -165,12 +165,12 @@ ChatTool findShortestPathTool = ChatTool.CreateFunctionTool(
             },
             ""label1"": {
                 ""type"": ""string"",
-                ""enum"": [""Movie"", ""Director"", ""Actor""],
+                ""enum"": [""Movie"", ""Person""],
                 ""description"": ""The node type of the first node.""
             },
             ""label2"": {
                 ""type"": ""string"",
-                ""enum"": [""Movie"", ""Director"", ""Actor""],
+                ""enum"": [""Movie"", ""Person""],
                 ""description"": ""The node type of the second node.""
             }
         },

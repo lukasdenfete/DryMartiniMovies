@@ -391,7 +391,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     out var date) ? date : null
             });     
         }
-        private static PathStepDto MapNode(INode node)
+        private static PathStepDto MapNode(INode node, string relationshipType)
         {
             if (node.Labels.Contains("Movie"))
             {
@@ -406,7 +406,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 return new PathStepDto
                 {
                     Name = node["name"].As<string>(),
-                    Type = NodeType.Person
+                    Type = NodeType.Person,
+                    Role = relationshipType == "ACTED_IN" ? PersonRole.Actor : PersonRole.Director
                 };
             }
             else
@@ -428,8 +429,18 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             if (await result.FetchAsync())
             {
                  var ipath = result.Current["path"].As<IPath>();
-                 return ipath.Nodes.Select(MapNode);
-                
+                 var nodes = ipath.Nodes.ToList();
+                 var edges = ipath.Relationships.ToList();
+                 var pathList = new List<PathStepDto>();
+
+                 for (int i = 0; i < nodes.Count; i++)
+                 {
+                    var relationshipType = i < edges.Count 
+                        ? edges[i].Type 
+                        : edges[i-1].Type;
+                    pathList.Add(MapNode(nodes[i], relationshipType));
+                 }
+                    return pathList;
             } else
             {
                 return Enumerable.Empty<PathStepDto>();

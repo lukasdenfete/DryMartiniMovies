@@ -53,7 +53,7 @@ namespace DryMartiniMovies.Application.Services
                             TmdbRating = movie.TmdbRating,
                             Description = movie.Description,
                             Genres = movie.Genres.Select(g => g.Name).ToList(),
-                            Directors = movie.Directors.Select(d => d.Name).ToList(),
+                            Directors = movie.Persons.Where(d => d.Role.Equals(PersonRole.Director)).Select(d => d.Name).ToList(),
                         },
                         Explanation = $"Du har gett {director.Name} {director.AvgRating:F2} ⭐ i snitt"
                     });
@@ -111,7 +111,7 @@ namespace DryMartiniMovies.Application.Services
                             TmdbRating = movie.TmdbRating,
                             Description = movie.Description,
                             Genres = movie.Genres.Select(g => g.Name).ToList(),
-                            Directors = movie.Directors.Select(d => d.Name).ToList(),
+                            Directors = movie.Persons.Where(d => d.Role.Equals(PersonRole.Director)).Select(d => d.Name).ToList(),
                         },
                         Explanation = $"Du gillar {genre.Name} – snittbetyg {genre.AvgRating:F2} ⭐"
                     });
@@ -145,7 +145,7 @@ namespace DryMartiniMovies.Application.Services
                             TmdbRating = movie.TmdbRating,
                             Description = movie.Description,
                             Genres = movie.Genres.Select(g => g.Name).ToList(),
-                            Directors = movie.Directors.Select(d => d.Name).ToList(),
+                            Directors = movie.Persons.Where(d => d.Role.Equals(PersonRole.Director)).Select(d => d.Name).ToList(),
                         },
                         Explanation = $"Här är {inputGenre}-filmer med minst 7.3 i betyg."
                     });
@@ -192,7 +192,7 @@ namespace DryMartiniMovies.Application.Services
                             TmdbRating = movie.TmdbRating,
                             Description = movie.Description,
                             Genres = movie.Genres.Select(g => g.Name).ToList(),
-                            Directors = movie.Directors.Select(d => d.Name).ToList(),
+                            Directors = movie.Persons.Where(d => d.Role.Equals(PersonRole.Director)).Select(d => d.Name).ToList(),
                         },
                         Explanation = $"Du har gett filmer med {actor.Name} {actor.AvgRating:F2} ⭐ i snitt"
                     });

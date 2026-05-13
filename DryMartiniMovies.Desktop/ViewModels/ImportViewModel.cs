@@ -33,7 +33,7 @@ public class ImportViewModel : INotifyPropertyChanged
     private void CountRows()
     {
         if (_selectedFilePath is null) { TotalRows = 0; return; }
-        // subtract 1 for header row
+        // -1 för header row
         TotalRows = System.IO.File.ReadLines(_selectedFilePath).Count() - 1;
     }
 
@@ -112,7 +112,7 @@ public class ImportViewModel : INotifyPropertyChanged
         try
         {
             using var content = new MultipartFormDataContent();
-            using var stream = System.IO.File.OpenRead(SelectedFilePath);
+            using var stream = File.OpenRead(SelectedFilePath);
             using var streamContent = new StreamContent(stream);
             content.Add(streamContent, "file", SelectedFileName!);
             Result = await _movieApiService.ImportLetterboxdAsync(content);

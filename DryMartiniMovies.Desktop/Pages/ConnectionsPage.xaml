@@ -4,10 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:helpers="clr-namespace:DryMartiniMovies.Desktop.Helpers"
         mc:Ignorable="d"
         Title="Connections">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <helpers:PathStepLabelConverter x:Key="PathStepLabelConverter"/>
     </Page.Resources>
     <Grid Background="#0d0d1a">
         <Grid.RowDefinitions>
@@ -115,7 +117,7 @@
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0} ({1})">
                                             <Binding Path="Name"/>
-                                            <Binding Path="Type"/>
+                                            <Binding Converter="{StaticResource PathStepLabelConverter}"/>
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>

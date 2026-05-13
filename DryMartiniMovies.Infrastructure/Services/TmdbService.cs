@@ -54,13 +54,15 @@ namespace DryMartiniMovies.Infrastructure.Services
 
             var directors = details.Credits.Crew
                 .Where(c => c.Job == "Director")
-                .Select(c => new Director { Name = c.Name, TmdbId = c.Id })
+                .Select(c => new Person { Name = c.Name, TmdbId = c.Id, Role = PersonRole.Director })
                 .ToList();
 
             var actors = details.Credits.Cast
                 .Take(10)
-                .Select(c => new Actor { Name = c.Name, TmdbId = c.Id })
+                .Select(c => new Person { Name = c.Name, TmdbId = c.Id, Role = PersonRole.Actor })
                 .ToList();
+            
+            var persons = directors.Concat(actors).ToList();
 
             return new Core.Models.Movie
             {
@@ -70,8 +72,7 @@ namespace DryMartiniMovies.Infrastructure.Services
                 Description = details.Overview,
                 PosterPath = details.PosterPath,
                 TmdbRating = details.VoteAverage,
-                Directors = directors,
-                Actors = actors,
+                Persons = persons,
                 Genres = details.Genres?.Select(g => new Genre { Name = g.Name }).ToList() ?? new List<Genre>()
             };
         }
@@ -101,9 +102,9 @@ namespace DryMartiniMovies.Infrastructure.Services
                     TmdbRating = details.VoteAverage,
                     Description = details.Overview,
                     Genres = details.Genres?.Select(g => new Genre { Name = g.Name }).ToList() ?? new(),
-                    Directors = details.Credits.Crew
+                    Persons = details.Credits.Crew
                         .Where(c => c.Job == "Director")
-                        .Select(c => new Director { Name = c.Name, TmdbId = c.Id })
+                        .Select(c => new Person { Name = c.Name, TmdbId = c.Id, Role = PersonRole.Director })
                         .ToList()
                 });
             }
@@ -131,9 +132,9 @@ namespace DryMartiniMovies.Infrastructure.Services
                     TmdbRating = details.VoteAverage,
                     Description = details.Overview,
                     Genres = details.Genres?.Select(g => new Genre { Name = g.Name }).ToList() ?? new(),
-                    Directors = details.Credits.Crew
+                    Persons = details.Credits.Crew
                         .Where(c => c.Job == "Director")
-                        .Select(c => new Director { Name = c.Name, TmdbId = c.Id })
+                        .Select(c => new Person { Name = c.Name, TmdbId = c.Id, Role = PersonRole.Director })
                         .ToList()
                 });
             }
