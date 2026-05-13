@@ -1,5 +1,6 @@
 ﻿using DryMartiniMovies.Core.Models;
 using DryMartiniMovies.Core.Interfaces;
+using DryMartiniMovies.Core.Enums;
 using Microsoft.Extensions.Configuration;
 using TMDbLib.Client;
 using TMDbLib.Objects.Discover;

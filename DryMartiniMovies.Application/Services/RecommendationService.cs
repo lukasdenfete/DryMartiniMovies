@@ -1,6 +1,7 @@
 ﻿using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Interfaces;
 using DryMartiniMovies.Core.Models;
+using DryMartiniMovies.Core.Enums;
 using DryMartiniMovies.Application.Services;
 using Microsoft.Extensions.Logging;
 

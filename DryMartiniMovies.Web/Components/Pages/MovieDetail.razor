@@ -40,12 +40,12 @@ else if (userMovie != null) {
         </div>
         <div class="movie-crew mt-4">
             <h4>Regissör</h4>
-            @foreach (var director in userMovie.Movie?.Directors ?? new ()) {
+            @foreach (var director in userMovie.Movie?.Persons?.Where(p => p.Role.Equals(PersonRole.Director)) ?? Enumerable.Empty<Person>()) {
                 <span class="badge bg-dark me-1">@director.Name</span>
             }
             <h4 class="mt-3">Skådespelare</h4>
             <div class="actors">
-                @foreach (var actor in userMovie.Movie?.Actors ?? new ()) {
+                @foreach (var actor in userMovie.Movie?.Persons?.Where(p => p.Role.Equals(PersonRole.Actor)) ?? Enumerable.Empty<Person>()) {
                     <span class="badge bg-dark me-2">@actor.Name</span>
                 }
             </div>

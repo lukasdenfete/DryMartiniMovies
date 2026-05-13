@@ -113,10 +113,9 @@
     }
     private async Task FindPath(int one, int two)
     {
-        Console.WriteLine($"tmdbid1: {tmdbId1}, tmdbid2: {tmdbId2}");
         moviePathDto = null;
         errorMessage = null;
-        var path = await MovieApiService.FindShortestPathAsync(one, two);
+        var path = await MovieApiService.FindShortestPathAsync(one, two, NodeType.Movie, NodeType.Movie);
         if (path == null)
             errorMessage = "Kunde inte hitta någon koppling mellan dessa filmer.";
         else

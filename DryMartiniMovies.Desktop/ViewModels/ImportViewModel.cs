@@ -112,7 +112,7 @@ public class ImportViewModel : INotifyPropertyChanged
         try
         {
             using var content = new MultipartFormDataContent();
-            using var stream = File.OpenRead(SelectedFilePath);
+            using var stream = System.IO.File.OpenRead(SelectedFilePath);
             using var streamContent = new StreamContent(stream);
             content.Add(streamContent, "file", SelectedFileName!);
             Result = await _movieApiService.ImportLetterboxdAsync(content);
