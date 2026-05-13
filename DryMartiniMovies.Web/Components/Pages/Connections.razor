@@ -8,30 +8,30 @@
 <div class="search-card">
     <div class="row g-3 align-items-end">
         <div class="col-12 col-sm">
-            <label class="form-label">Första filmen</label>
+            <label class="form-label">Film eller person</label>
             <div class="autocomplete-wrap">
-                <input class="form-control dark-input" type="text" @oninput="e => SearchHistory(userHistory1, movie1 = e.Value.ToString())" value="@movie1" placeholder="t.ex. Pulp Fiction" />
+                <input class="form-control dark-input" type="text" @oninput="e => SearchHistory(userHistory1, title1 = e.Value.ToString())" value="@title1" placeholder="t.ex. Robert De Niro" />
                 @if (userHistory1.Any())
                 {
                     <ul class="autocomplete-list">
                         @foreach (var movie in userHistory1)
                         {
-                            <li class="autocomplete-item" @onclick="() => SaveTmdbId(movie, true)">@movie.Movie.Title</li>
+                            <li class="autocomplete-item" @onclick="() => SaveTmdbId(movie, true)">@movie.Name</li>
                         }
                     </ul>
                 }
             </div>
         </div>
         <div class="col-12 col-sm">
-            <label class="form-label">Andra filmen</label>
+            <label class="form-label">Film eller person</label>
             <div class="autocomplete-wrap">
-                <input class="form-control dark-input" type="text" @oninput="e => SearchHistory(userHistory2, movie2 = e.Value.ToString())" value="@movie2" placeholder="t.ex. The Godfather" />
+                <input class="form-control dark-input" type="text" @oninput="e => SearchHistory(userHistory2, title2 = e.Value.ToString())" value="@title2" placeholder="t.ex. Barbie" />
                 @if (userHistory2.Any())
                 {
                     <ul class="autocomplete-list">
                         @foreach (var movie in userHistory2)
                         {
-                            <li class="autocomplete-item" @onclick="() => SaveTmdbId(movie, false)">@movie.Movie.Title</li>
+                            <li class="autocomplete-item" @onclick="() => SaveTmdbId(movie, false)">@movie.Name</li>
                         }
                     </ul>
                 }
@@ -81,33 +81,36 @@
 
 
 @code {
-    private string movie1;
-    private string movie2;
+    private string title1;
+    private string title2;
     private int tmdbId1;
     private int tmdbId2;
     private MoviePathDto moviePathDto;
     private string errorMessage;
-    private List<UserMovie> userHistory1 = new List<UserMovie>();
-    private List<UserMovie> userHistory2 = new List<UserMovie>();
+    private List<GraphSearchDto> userHistory1 = new List<GraphSearchDto>();
+    private List<GraphSearchDto> userHistory2 = new List<GraphSearchDto>();
+    private NodeType label1;
+    private NodeType label2;
 
-    private async Task SearchHistory(List<UserMovie> userMovies, string query)
+    private async Task SearchHistory(List<GraphSearchDto> userHistory, string query)
     {
-        if (string.IsNullOrEmpty(query)) { userMovies.Clear(); return; }
-        var result = await MovieApiService.SearchUserHistoryAsync(query);
-        userMovies.Clear();
-        userMovies.AddRange(result);
+        if (string.IsNullOrEmpty(query)) { userHistory.Clear(); return; }
+        var result = await MovieApiService.SearchGraphAsync(query);
+        userHistory.Clear();
+        userHistory.AddRange(result);
     }
-    private void SaveTmdbId(UserMovie userMovie, bool isMovie1)
+    private void SaveTmdbId(GraphSearchDto dto, bool isFirstNode)
     {
-        Console.WriteLine($"SaveTmdbId called: {userMovie.Movie?.TmdbId}");
-        if(isMovie1){
-            tmdbId1 = userMovie.Movie.TmdbId;
-            movie1 = userMovie.Movie.Title;
+        if(isFirstNode){
+            tmdbId1 = dto.TmdbId;
+            title1 = dto.Name;
+            label1 = dto.Label;
             userHistory1.Clear();
         }
         else {
-            tmdbId2 = userMovie.Movie.TmdbId;
-            movie2 = userMovie.Movie.Title;
+            tmdbId2 = dto.TmdbId;
+            title2 = dto.Name;
+            label2 = dto.Label;
             userHistory2.Clear();
         } 
     }
@@ -115,9 +118,9 @@
     {
         moviePathDto = null;
         errorMessage = null;
-        var path = await MovieApiService.FindShortestPathAsync(one, two, NodeType.Movie, NodeType.Movie);
+        var path = await MovieApiService.FindShortestPathAsync(one, two, label1, label2);
         if (path == null)
-            errorMessage = "Kunde inte hitta någon koppling mellan dessa filmer.";
+            errorMessage = "Kunde inte hitta någon koppling mellan dessa noder.";
         else
             moviePathDto = path;
     }

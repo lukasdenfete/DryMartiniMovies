@@ -148,7 +148,7 @@ namespace DryMartiniMovies.Application.Services
                             Genres = movie.Genres.Select(g => g.Name).ToList(),
                             Directors = movie.Persons.Where(d => d.Role.Equals(PersonRole.Director)).Select(d => d.Name).ToList(),
                         },
-                        Explanation = $"Här är {inputGenre}-filmer med minst 7.3 i betyg."
+                        Explanation = $"{inputGenre}-filmer med minst 7.3 i betyg."
                     });
                 }
             return recommendations
