@@ -116,13 +116,6 @@ namespace DryMartiniMovies.API.Controllers
             var result = await _movieService.SearchUserHistoryAsync(title, userId);
             return Ok(result);
         }
-        [HttpGet("connectors")]
-        public async Task<IActionResult> FindConnectors()
-        {
-            var userId = _config["App:DefaultUserId"] ?? "1";
-            var result = await _movieService.FindConnectorsAsync(userId);
-            return Ok(result);
-        }
         [HttpGet("path")]
         public async Task<IActionResult> FindShortestPath(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2)
         {

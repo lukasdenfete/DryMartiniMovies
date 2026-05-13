@@ -92,10 +92,6 @@ namespace DryMartiniMovies.Client.Services
             if (!response.IsSuccessStatusCode) return false;
             return true;
         }
-        public async Task<List<PersonScoreDto>> GetConnectorsAsync()
-        {
-            return await _http.GetFromJsonAsync<List<PersonScoreDto>>("api/movies/connectors") ?? new List<PersonScoreDto>();
-        }
         public async Task<MoviePathDto?> FindShortestPathAsync(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2)
         {
             var response = await _http.GetAsync($"api/movies/path?tmdbId1={tmdbId1}&tmdbId2={tmdbId2}&label1={label1}&label2={label2}");

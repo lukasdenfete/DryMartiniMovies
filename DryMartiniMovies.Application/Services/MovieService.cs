@@ -73,19 +73,6 @@ namespace DryMartiniMovies.Application.Services
         {
             return await _movieRepository.SearchUserHistoryAsync(title, userId);
         }
-        public async Task<IEnumerable<PersonScoreDto?>> FindConnectorsAsync(string userId)
-        {
-            var connectors = await _movieRepository.FindConnectorsAsync(userId);
-            var grouped = connectors.GroupBy(x => new { x.Name, Role = x.Role.First() }).Where(g => g.Count() > 2).Select(g => 
-                new PersonScoreDto
-            {
-                Name = g.Key.Name,
-                Role = g.Key.Role,
-                Score = g.Average(x => x.Rating) + (g.Key.Role == Core.Enums.PersonRole.Director ? 0.5f : 0f), //lägger till +0.5 på betyg om det är director då de ska skattas högre
-                MovieTitles = g.Select(x => x.MovieTitle).ToList()
-            }).OrderByDescending(x => x.Score).Where(x => x.Score > 4);
-            return grouped;
-        }
         public async Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2)
         {
             var path = await _movieRepository.FindShortestPathAsync(tmdbId1, tmdbId2, label1, label2);

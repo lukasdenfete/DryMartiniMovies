@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Xml;
 using DryMartiniMovies.Core.DTOs;
 using DryMartiniMovies.Core.Enums;
 using DryMartiniMovies.Core.Interfaces;
@@ -24,8 +25,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             var result = await session.RunAsync(@"
                 MATCH (m:Movie {tmdbId: $id})
                 OPTIONAL MATCH (m)-[:HAS_GENRE]->(g:Genre)
-                OPTIONAL MATCH (d:Director)-[:DIRECTED]->(m)
-                OPTIONAL MATCH (a:Actor)-[:ACTED_IN]->(m)
+                OPTIONAL MATCH (d:Person)-[:DIRECTED]->(m)
+                OPTIONAL MATCH (a:Person)-[:ACTED_IN]->(m)
                 RETURN m,
                         collect(DISTINCT g.name) AS genres,
                         collect(DISTINCT d.name) AS directors,
@@ -40,7 +41,9 @@ namespace DryMartiniMovies.Infrastructure.Repositories
         {
             var node = record["m"].As<INode>();
             var tmdbId = node["tmdbId"].As<int>();
-
+            var directors = record["directors"].As<List<string>>().Select(d => new Person { Name = d, Role = PersonRole.Director }).ToList();
+            var actors = record["actors"].As<List<string>>().Select(a => new Person { Name = a, Role = PersonRole.Actor }).ToList();
+            var persons = directors.Concat(actors).ToList();
             return new Movie
             {
                 Id = tmdbId.ToString(),
@@ -51,8 +54,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 PosterPath = node["posterPath"].As<string>(),
                 TmdbRating = node["tmdbRating"].As<double>(),
                 Genres = record["genres"].As<List<string>>().Select(g => new Genre { Name = g }).ToList(),
-                Directors = record["directors"].As<List<string>>().Select(d => new Director { Name = d }).ToList(),
-                Actors = record["actors"].As<List<string>>().Select(a => new Actor { Name = a }).ToList()
+                Persons = persons,
             };
         }
 
@@ -74,15 +76,15 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     MERGE (m)-[:HAS_GENRE]->(g)
                 )
                 FOREACH (director IN $directors |
-                MERGE (d:Director {name: director.name})
-                SET d.tmdbId = director.tmdbId
-                MERGE (d)-[:DIRECTED]->(m)
+                MERGE (p:Person {name: director.name})
+                SET p.tmdbId = director.tmdbId
+                MERGE (p)-[:DIRECTED]->(m)
                 )
                 WITH m
                 FOREACH (actor IN $actors |
-                    MERGE (a:Actor {name: actor.name})
-                    SET a.tmdbId = actor.tmdbId
-                    MERGE (a)-[:ACTED_IN]->(m)
+                    MERGE (p:Person {name: actor.name})
+                    SET p.tmdbId = actor.tmdbId
+                    MERGE (p)-[:ACTED_IN]->(m)
                 )",
                 new
                 {
@@ -93,8 +95,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     posterPath = movie.PosterPath ?? "",
                     tmdbRating = movie.TmdbRating,
                     genres = movie.Genres.Select(g => g.Name).ToList(),
-                    directors = movie.Directors.Select(d => new { name = d.Name, tmdbId = d.TmdbId ?? 0 }).ToList(),
-                    actors = movie.Actors.Select(a => new { name = a.Name, tmdbId = a.TmdbId ?? 0 }).ToList(),
+                    directors = movie.Persons.Where(p => p.Role.Equals(PersonRole.Director)).Select(p => new { name = p.Name, tmdbId = p.TmdbId ?? 0 }).ToList(),
+                    actors =  movie.Persons.Where(p => p.Role.Equals(PersonRole.Actor)).Select(p => new { name = p.Name, tmdbId = p.TmdbId ?? 0 }).ToList()
                 });
         }
 
@@ -104,8 +106,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             var result = await session.RunAsync(@"
                 MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)
                 OPTIONAL MATCH (m)-[:HAS_GENRE]->(g:Genre)
-                OPTIONAL MATCH (d:Director)-[:DIRECTED]->(m)
-                OPTIONAL MATCH (a:Actor)-[:ACTED_IN]->(m)
+                OPTIONAL MATCH (d:Person)-[:DIRECTED]->(m)
+                OPTIONAL MATCH (a:Person)-[:ACTED_IN]->(m)
                 RETURN m,
                        r.rating AS rating,
                        r.watchedDate AS watchedDate,
@@ -135,8 +137,8 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             var result = await session.RunAsync(@"
                 MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie {tmdbId: $tmdbId})
                 OPTIONAL MATCH (m)-[:HAS_GENRE]->(g:Genre)
-                OPTIONAL MATCH (d:Director)-[:DIRECTED]->(m)
-                OPTIONAL MATCH (a:Actor)-[:ACTED_IN]->(m)
+                OPTIONAL MATCH (d:Person)-[:DIRECTED]->(m)
+                OPTIONAL MATCH (a:Person)-[:ACTED_IN]->(m)
                 RETURN m,
                        r.rating AS rating,
                        r.watchedDate AS watchedDate,
@@ -215,7 +217,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
 
             // Favoritregissörer
             var directorResult = await session.RunAsync(@"
-                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Person)
                 RETURN d.name AS name, count(m) AS count, avg(r.rating) AS avgRating
                 ORDER BY count DESC",
                 new { userId });
@@ -239,7 +241,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
 
             //Favoritskådespelare
             var actorResult = await session.RunAsync(@"
-                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Person)
                 WITH a.name AS name, count(m) AS count, avg(r.rating) AS avgRating
                 WHERE count >= 3
                 RETURN name, count, avgRating
@@ -286,7 +288,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             await using var session = _context.OpenSession();
 
             var result = await session.RunAsync(@"
-                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Person)
                 WHERE d.tmdbId IS NOT NULL
                 WITH d, avg(r.rating) AS avgRating, count(m) AS movieCount
                 WHERE avgRating >= 3.5 AND movieCount >= $minMovies
@@ -308,7 +310,7 @@ namespace DryMartiniMovies.Infrastructure.Repositories
             await using var session = _context.OpenSession();
 
             var result = await session.RunAsync(@"
-                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
+                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Person)
                 WHERE a.tmdbId IS NOT NULL
                 WITH a, avg(r.rating) AS avgRating, count(m) AS movieCount
                 WHERE avgRating >= 3.5 AND movieCount >= $minMovies
@@ -389,28 +391,6 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     out var date) ? date : null
             });     
         }
-
-        public async Task<IEnumerable<CommonDenominatorDto>> FindConnectorsAsync(string userId)
-        {
-            await using var session = _context.OpenSession();
-            var result = await session.RunAsync(@"
-                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
-                RETURN r.rating AS rating, d.name AS name, ""Director"" AS role, m.title AS movieTitle
-                UNION ALL 
-                MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
-                RETURN r.rating AS rating, a.name AS name, ""Actor"" AS role, m.title AS movieTitle",
-                new { userId });
-            
-            var records = await result.ToListAsync();
-            return records.Select(r => new CommonDenominatorDto
-            {
-                Name = r["name"].As<string>(),
-                Rating = r["rating"].As<float>(),
-                Role = new [] { Enum.Parse<PersonRole>(r["role"].As<string>()) },
-                MovieTitle = r["movieTitle"].As<string>()
-            });
-        }
-
         private static PathStepDto MapNode(INode node)
         {
             if (node.Labels.Contains("Movie"))
@@ -421,22 +401,15 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                     Type = NodeType.Movie
                 };
             }
-            else if (node.Labels.Contains("Actor"))
+            else if (node.Labels.Contains("Person"))
             {
                 return new PathStepDto
                 {
                     Name = node["name"].As<string>(),
-                    Type = NodeType.Actor
+                    Type = NodeType.Person
                 };
             }
-            else if (node.Labels.Contains("Director")) 
-            {
-                return new PathStepDto
-                {
-                    Name = node["name"].As<string>(),
-                    Type = NodeType.Director
-                };
-            } else
+            else
             {
                 throw new InvalidOperationException($"Unknown node label: {string.Join(", ", node.Labels)}");
             }
@@ -471,14 +444,9 @@ namespace DryMartiniMovies.Infrastructure.Repositories
                 RETURN DISTINCT m.tmdbId AS tmdbId, m.title AS name, 'Movie' AS label
                 LIMIT 20
             UNION
-            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN]-(a:Actor)
-                WHERE toLower(a.name) CONTAINS toLower($title)
-                RETURN DISTINCT a.tmdbId AS tmdbId, a.name AS name, 'Actor' AS label
-                LIMIT 20
-            UNION
-            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:DIRECTED]-(d:Director)
-                WHERE toLower(d.name) CONTAINS toLower($title)
-                RETURN DISTINCT d.tmdbId AS tmdbId, d.name AS name, 'Director' AS label
+            MATCH (u:User {id: $userId})-[r:RATED]->(m:Movie)<-[:ACTED_IN|DIRECTED]-(p:Person)
+                WHERE toLower(p.name) CONTAINS toLower($title)
+                RETURN DISTINCT p.tmdbId AS tmdbId, p.name AS name, 'Person' AS label
                 LIMIT 20",
             new { title, userId });
 

@@ -15,7 +15,6 @@ public interface IMovieService
     Task<bool> AddMovieAsync(string title, int year, string userId, float rating, DateTime watchedDate);
     Task<bool> RemoveRatingAsync(string userId, int tmdbId);
     Task<IEnumerable<UserMovie?>> SearchUserHistoryAsync(string title, string userId);
-    Task<IEnumerable<PersonScoreDto?>> FindConnectorsAsync(string userId);
     Task<IEnumerable<PathStepDto>> FindShortestPathAsync(int tmdbId1, int tmdbId2, NodeType label1, NodeType label2);
     Task<IEnumerable<GraphSearchDto>> SearchGraphAsync(string title, string userId);
 

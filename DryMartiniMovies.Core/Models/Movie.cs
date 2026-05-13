@@ -13,6 +13,5 @@ public class Movie
     public string? PosterPath { get; set; }
     public double TmdbRating { get; set; }
     public List<Genre> Genres { get; set; } = new();
-    public List<Director> Directors { get; set; } = new();
-    public List<Actor> Actors { get; set; } = new();
+    public List<Person> Persons { get; set; } = new();
 }
